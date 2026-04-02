@@ -28,7 +28,7 @@ import { Input } from '@/components/ui/input';
 
 export default function GlitchPlayer() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
-  const [activePlaylistId, setActivePlaylistId] = useState<string>('all');
+  const [activePlaylistId, setActivePlaylistId] = useState<string | null>(null);
   const [tracks, setTracks] = useState<TrackMetadata[]>([]);
   const [currentTrackId, setCurrentTrackId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,7 +50,12 @@ export default function GlitchPlayer() {
     const allPlaylists = await db.getPlaylists();
     setTracks(allTracks);
     setPlaylists(allPlaylists);
-  }, []);
+    
+    // Default to the first playlist if none is selected
+    if (!activePlaylistId && allPlaylists.length > 0) {
+      setActivePlaylistId(allPlaylists[0].id);
+    }
+  }, [activePlaylistId]);
 
   const currentTrack = useMemo(() => 
     tracks.find(t => t.id === currentTrackId), 
@@ -79,7 +84,7 @@ export default function GlitchPlayer() {
   const currentTracks = tracks.filter(t => {
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           t.artist.toLowerCase().includes(searchQuery.toLowerCase());
-    if (activePlaylistId === 'all') return matchesSearch;
+    if (!activePlaylistId) return matchesSearch;
     const playlist = playlists.find(p => p.id === activePlaylistId);
     return playlist?.trackIds.includes(t.id) && matchesSearch;
   });
@@ -195,8 +200,18 @@ export default function GlitchPlayer() {
     const folderMap = new Map<string, string[]>();
 
     for (const file of audioFiles) {
-      const path = (file as any).webkitRelativePath;
-      const folderName = path ? path.split('/')[0] : "Uploaded Tracks";
+      const fullPath = (file as any).webkitRelativePath;
+      let folderName = "Uploaded Tracks";
+      
+      if (fullPath) {
+        const parts = fullPath.split('/');
+        // Use the immediate parent of the file to support multiple folder grouping
+        if (parts.length > 1) {
+          folderName = parts[parts.length - 2];
+        } else {
+          folderName = parts[0];
+        }
+      }
       
       const meta = await extractMetadata(file);
       const track: TrackMetadata = {
@@ -225,6 +240,7 @@ export default function GlitchPlayer() {
         createdAt: Date.now()
       };
       await db.savePlaylist(newPlaylist);
+      if (!activePlaylistId) setActivePlaylistId(newPlaylist.id);
     }
 
     await loadData();
@@ -234,7 +250,7 @@ export default function GlitchPlayer() {
   const deletePlaylist = async (id: string) => {
     if (confirm("Delete this playlist?")) {
       await db.deletePlaylist(id);
-      if (activePlaylistId === id) setActivePlaylistId('all');
+      if (activePlaylistId === id) setActivePlaylistId(null);
       loadData();
     }
   };
@@ -328,6 +344,11 @@ export default function GlitchPlayer() {
                   </button>
                 </div>
               ))}
+              {playlists.length === 0 && (
+                <div className="p-6 text-center border-2 border-dashed border-muted">
+                  <p className="text-xl text-muted-foreground uppercase">Pick folders to begin</p>
+                </div>
+              )}
             </nav>
           </div>
         </aside>
@@ -335,8 +356,8 @@ export default function GlitchPlayer() {
         <main className="flex-1 overflow-y-auto p-6 bg-background">
           <div className="mb-6 flex items-end justify-between">
             <div>
-              <h2 className="font-headline text-2xl mb-1">
-                {activePlaylistId === 'all' ? 'ALL TRACKS' : playlists.find(p => p.id === activePlaylistId)?.name.toUpperCase()}
+              <h2 className="font-headline text-2xl mb-1 uppercase">
+                {activePlaylistId ? playlists.find(p => p.id === activePlaylistId)?.name : 'YOUR COLLECTION'}
               </h2>
               <p className="text-xl font-body text-muted-foreground">
                 {currentTracks.length} SONGS FOUND
@@ -398,6 +419,7 @@ export default function GlitchPlayer() {
       </div>
 
       <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1fr_2fr_1fr] items-center">
+        {/* Left Column: Song Info */}
         <div className="flex items-center gap-4 justify-start min-w-0 overflow-hidden pr-4">
           <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden">
             {currentArtUrl ? (
@@ -416,6 +438,7 @@ export default function GlitchPlayer() {
           </div>
         </div>
 
+        {/* Center Column: Controls & Progress */}
         <div className="flex flex-col items-center justify-center w-full px-4 gap-2">
           <div className="flex items-center justify-center gap-4">
             <ControlIcon 
@@ -465,14 +488,15 @@ export default function GlitchPlayer() {
           </div>
         </div>
 
+        {/* Right Column: Volume & Actions */}
         <div className="flex items-center justify-end gap-6 min-w-0 pl-4">
-          <div className="flex items-center gap-3 w-48">
+          <div className="flex items-center gap-3 w-64">
             <ControlIcon 
               icon={player.isMuted ? VolumeX : Volume2} 
               size={20}
               onClick={player.toggleMute} 
             />
-            <div className="flex-1 h-2 bg-white/10 pixel-border-sm relative cursor-pointer group">
+            <div className="flex-1 h-3 bg-white/10 pixel-border-sm relative cursor-pointer group">
               <div 
                 className="absolute top-0 left-0 h-full bg-primary"
                 style={{ width: `${player.volume * 100}%` }}
@@ -487,6 +511,9 @@ export default function GlitchPlayer() {
                 className="absolute inset-0 opacity-0 cursor-pointer"
               />
             </div>
+            <button className="p-2 text-white/70 hover:text-white transition-colors">
+              <MoreHorizontal size={20} />
+            </button>
           </div>
         </div>
       </footer>
