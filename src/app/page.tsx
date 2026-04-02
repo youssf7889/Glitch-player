@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -348,45 +349,49 @@ export default function GlitchPlayer() {
         </main>
       </div>
 
-      <footer className="h-32 bg-accent text-white border-t-4 border-primary px-8 flex items-center gap-8">
-        <div className="w-72 flex items-center gap-4 flex-shrink-0">
-          <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center">
-            <Music size={32} />
+      <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 flex items-center gap-6">
+        <div className="w-64 flex items-center gap-3 flex-shrink-0">
+          <div className="w-12 h-12 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center">
+            <Music size={24} />
           </div>
           <div className="overflow-hidden">
-            <div className="font-headline text-xs truncate mb-1 uppercase tracking-tight text-primary">
-              {currentTrack?.name || 'NO TRACK SELECTED'}
+            <div className="font-headline text-[10px] truncate mb-0.5 uppercase tracking-tight text-primary">
+              {currentTrack?.name || 'NO TRACK'}
             </div>
-            <div className="font-body text-2xl text-white/60 truncate uppercase">
-              {currentTrack?.artist || 'SYSTEM IDLE'}
+            <div className="font-body text-xl text-white/60 truncate uppercase">
+              {currentTrack?.artist || 'IDLE'}
             </div>
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col gap-4">
-          <div className="flex items-center justify-center gap-6">
+        <div className="flex-1 flex flex-col gap-2">
+          <div className="flex items-center justify-center gap-4">
             <ControlIcon 
               icon={Shuffle} 
+              size={18}
               active={player.shuffle} 
               onClick={() => player.setShuffle(!player.shuffle)} 
             />
             <ControlIcon 
               icon={SkipBack} 
+              size={18}
               onClick={prevTrack} 
             />
             <button 
               onClick={player.togglePlay}
-              className="w-16 h-16 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all mx-2"
+              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all mx-1"
             >
-              {player.isPlaying ? <Pause fill="white" size={32} /> : <Play fill="white" size={32} />}
+              {player.isPlaying ? <Pause fill="white" size={24} /> : <Play fill="white" size={24} />}
             </button>
             <ControlIcon 
               icon={SkipForward} 
+              size={18}
               onClick={nextTrack} 
             />
             <div className="relative">
               <ControlIcon 
                 icon={Repeat} 
+                size={18}
                 active={player.repeat !== 'none'} 
                 onClick={() => {
                   const modes: ('none' | 'all' | 'one')[] = ['none', 'all', 'one'];
@@ -395,7 +400,7 @@ export default function GlitchPlayer() {
                 }} 
               />
               {player.repeat === 'one' && (
-                <span className="absolute -top-1 -right-1 text-[10px] font-bold bg-primary px-1 border border-white leading-none flex items-center justify-center h-4 w-4">1</span>
+                <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-primary px-0.5 border border-white leading-none flex items-center justify-center h-3 w-3">1</span>
               )}
             </div>
           </div>
@@ -406,13 +411,14 @@ export default function GlitchPlayer() {
           />
         </div>
 
-        <div className="w-72 flex items-center justify-end gap-6 flex-shrink-0">
-          <div className="flex items-center gap-4 flex-1 justify-end">
+        <div className="w-64 flex items-center justify-end gap-4 flex-shrink-0">
+          <div className="flex items-center gap-3 flex-1 justify-end">
             <ControlIcon 
               icon={player.isMuted ? VolumeX : Volume2} 
+              size={18}
               onClick={player.toggleMute} 
             />
-            <div className="w-40 h-3 bg-white/10 pixel-border-sm relative cursor-pointer group">
+            <div className="w-32 h-2 bg-white/10 pixel-border-sm relative cursor-pointer group">
               <div 
                 className="absolute top-0 left-0 h-full bg-primary"
                 style={{ width: `${player.volume * 100}%` }}
@@ -428,7 +434,7 @@ export default function GlitchPlayer() {
               />
             </div>
           </div>
-          <ControlIcon icon={MoreVertical} />
+          <ControlIcon icon={MoreVertical} size={18} />
         </div>
       </footer>
     </div>
