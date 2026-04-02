@@ -364,7 +364,7 @@ export default function GlitchPlayer() {
         </div>
 
         <div className="flex-1 flex flex-col gap-2">
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center gap-2">
             <ControlIcon 
               icon={Shuffle} 
               size={18}
@@ -378,9 +378,9 @@ export default function GlitchPlayer() {
             />
             <button 
               onClick={player.togglePlay}
-              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all mx-1"
+              className="w-10 h-10 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all mx-1"
             >
-              {player.isPlaying ? <Pause fill="white" size={24} /> : <Play fill="white" size={24} />}
+              {player.isPlaying ? <Pause fill="white" size={20} /> : <Play fill="white" size={20} />}
             </button>
             <ControlIcon 
               icon={SkipForward} 
