@@ -38,19 +38,20 @@
   }
 }
 
-/* Custom Pixel Scrollbar */
+/* Minimalist Scrollbar */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: hsl(var(--secondary));
+  background: hsl(var(--background));
 }
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--primary));
-  border: 2px solid hsl(var(--secondary));
+  border-radius: 0px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--foreground));
+  background: hsl(var(--accent));
 }
 
 .pixel-border {
