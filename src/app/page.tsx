@@ -393,7 +393,7 @@ export default function GlitchPlayer() {
         <main className="flex-1 overflow-y-auto p-6 bg-background">
           {activePlaylistId ? (
             <>
-              <div className="mb-6 flex items-end justify-between">
+              <div className="mb-4 flex items-end justify-between">
                 <div>
                   <h2 className="font-headline text-2xl mb-1 uppercase truncate max-w-xl">
                     {playlists.find(p => p.id === activePlaylistId)?.name}
@@ -404,8 +404,8 @@ export default function GlitchPlayer() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <div className="grid grid-cols-12 gap-4 px-6 py-2 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase">
+              <div className="space-y-1.5">
+                <div className="grid grid-cols-12 gap-4 px-6 py-1 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase">
                   <div className="col-span-1">#</div>
                   <div className="col-span-5">Title</div>
                   <div className="col-span-3">Artist</div>
@@ -418,7 +418,7 @@ export default function GlitchPlayer() {
                     key={track.id}
                     onClick={() => playTrack(track)}
                     className={cn(
-                      "grid grid-cols-12 gap-4 px-6 py-1.5 pixel-border-sm cursor-pointer items-center transition-all",
+                      "grid grid-cols-12 gap-4 px-6 py-0.5 pixel-border-sm cursor-pointer items-center transition-all",
                       currentTrackId === track.id 
                         ? "bg-primary/10 border-primary shadow-[4px_4px_0px_0px_hsl(var(--primary))] translate-x-1" 
                         : "bg-white hover:bg-secondary/20"
@@ -427,7 +427,7 @@ export default function GlitchPlayer() {
                     <div className="col-span-1 font-body text-xl text-muted-foreground flex items-center gap-2">
                       <span className="w-8 text-center">{(i + 1).toString().padStart(2, '0')}</span>
                       {currentTrackId === track.id && player.isPlaying && (
-                        <div className="flex gap-0.5 items-end h-5 mb-0.5">
+                        <div className="flex gap-0.5 items-end h-4 mb-0.5">
                           <div className="w-1 bg-primary animate-bounce [animation-duration:0.5s]" />
                           <div className="w-1 bg-primary animate-bounce [animation-duration:0.8s]" />
                           <div className="w-1 bg-primary animate-bounce [animation-duration:0.6s]" />
