@@ -19,6 +19,7 @@ import {
   Search,
   MoreHorizontal
 } from 'lucide-react';
+import * as mm from 'music-metadata-browser';
 import { db, TrackMetadata, Playlist } from '@/lib/db';
 import { useAudioPlayer } from '@/hooks/use-audio-player';
 import { ProgressBar } from '@/components/player/ProgressBar';
@@ -34,6 +35,7 @@ export default function GlitchPlayer() {
   const [searchQuery, setSearchQuery] = useState('');
   
   const currentUrlRef = useRef<string | null>(null);
+  const currentArtUrlRef = useRef<string | null>(null);
   const nextTrackRef = useRef<() => void>(null);
 
   const player = useAudioPlayer({
@@ -52,11 +54,18 @@ export default function GlitchPlayer() {
   }, []);
 
   const playTrack = useCallback(async (track: TrackMetadata) => {
-    if (currentUrlRef.current) {
-      URL.revokeObjectURL(currentUrlRef.current);
-    }
+    if (currentUrlRef.current) URL.revokeObjectURL(currentUrlRef.current);
+    if (currentArtUrlRef.current) URL.revokeObjectURL(currentArtUrlRef.current);
+
     const url = URL.createObjectURL(track.blob);
     currentUrlRef.current = url;
+    
+    if (track.albumArt) {
+      currentArtUrlRef.current = URL.createObjectURL(track.albumArt);
+    } else {
+      currentArtUrlRef.current = null;
+    }
+
     setCurrentTrackId(track.id);
     player.play(url);
   }, [player]);
@@ -116,6 +125,35 @@ export default function GlitchPlayer() {
     loadData();
   }, [loadData]);
 
+  const extractMetadata = async (file: File): Promise<Partial<TrackMetadata>> => {
+    try {
+      const metadata = await mm.parseBlob(file);
+      const { common, format } = metadata;
+      
+      let albumArt: Blob | null = null;
+      if (common.picture && common.picture.length > 0) {
+        albumArt = new Blob([common.picture[0].data], { type: common.picture[0].format });
+      }
+
+      return {
+        name: common.title || file.name.replace(/\.[^/.]+$/, ""),
+        artist: common.artist || "Unknown Artist",
+        album: common.album || "Unknown Album",
+        duration: format.duration || 0,
+        albumArt
+      };
+    } catch (e) {
+      console.error("Metadata extraction failed", e);
+      return {
+        name: file.name.replace(/\.[^/.]+$/, ""),
+        artist: "Unknown Artist",
+        album: "Unknown Album",
+        duration: 0,
+        albumArt: null
+      };
+    }
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
@@ -123,13 +161,15 @@ export default function GlitchPlayer() {
     for (const file of files) {
       if (!file.type.startsWith('audio/')) continue;
       
+      const meta = await extractMetadata(file);
       const track: TrackMetadata = {
         id: crypto.randomUUID(),
-        name: file.name.replace(/\.[^/.]+$/, ""),
-        artist: "Unknown Artist",
-        album: "Unknown Album",
-        duration: 0,
+        name: meta.name!,
+        artist: meta.artist!,
+        album: meta.album!,
+        duration: meta.duration!,
         blob: file,
+        albumArt: meta.albumArt,
         addedAt: Date.now()
       };
       await db.saveTrack(track);
@@ -152,13 +192,15 @@ export default function GlitchPlayer() {
     const newTrackIds: string[] = [];
 
     for (const file of audioFiles) {
+      const meta = await extractMetadata(file);
       const track: TrackMetadata = {
         id: crypto.randomUUID(),
-        name: file.name.replace(/\.[^/.]+$/, ""),
-        artist: "Unknown Artist",
-        album: "Unknown Album",
-        duration: 0,
+        name: meta.name!,
+        artist: meta.artist!,
+        album: meta.album!,
+        duration: meta.duration!,
         blob: file,
+        albumArt: meta.albumArt,
         addedAt: Date.now()
       };
       await db.saveTrack(track);
@@ -202,6 +244,13 @@ export default function GlitchPlayer() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [player, nextTrack, prevTrack]);
+
+  const formatTime = (seconds: number) => {
+    if (!seconds) return "--:--";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className="h-screen w-full flex flex-col overflow-hidden bg-background text-foreground font-body select-none">
@@ -328,11 +377,20 @@ export default function GlitchPlayer() {
                     </div>
                   )}
                 </div>
-                <div className={cn(
-                  "col-span-5 font-headline text-base truncate uppercase tracking-tight",
-                  currentTrackId === track.id ? "text-primary font-bold" : ""
-                )}>
-                  {track.name}
+                <div className="col-span-5 flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 bg-secondary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden">
+                    {track.albumArt ? (
+                      <img src={URL.createObjectURL(track.albumArt)} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <Music size={16} className="text-primary" />
+                    )}
+                  </div>
+                  <div className={cn(
+                    "font-headline text-base truncate uppercase tracking-tight",
+                    currentTrackId === track.id ? "text-primary font-bold" : ""
+                  )}>
+                    {track.name}
+                  </div>
                 </div>
                 <div className="col-span-3 font-body text-lg truncate">
                   {track.artist}
@@ -341,7 +399,7 @@ export default function GlitchPlayer() {
                   {track.album}
                 </div>
                 <div className="col-span-1 font-body text-lg text-right">
-                  --:--
+                  {formatTime(track.duration)}
                 </div>
               </div>
             ))}
@@ -352,8 +410,12 @@ export default function GlitchPlayer() {
       <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1fr_2fr_1fr] items-center">
         {/* Left Column: Track Info */}
         <div className="flex items-center gap-4 justify-start min-w-0 overflow-hidden">
-          <div className="w-14 h-14 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center">
-            <Music size={24} />
+          <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden">
+            {currentTrack?.albumArt ? (
+              <img src={URL.createObjectURL(currentTrack.albumArt)} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <Music size={24} />
+            )}
           </div>
           <div className="overflow-hidden">
             <div className="font-headline text-sm truncate mb-0.5 uppercase tracking-tight text-primary">
@@ -407,7 +469,7 @@ export default function GlitchPlayer() {
               )}
             </div>
           </div>
-          {/* Bottom row: Progress Bar - Force 100% of the column width */}
+          {/* Bottom row: Progress Bar */}
           <div className="w-full">
             <ProgressBar 
               current={player.currentTime} 

@@ -12,6 +12,7 @@ export interface TrackMetadata {
   album: string;
   duration: number;
   blob: Blob;
+  albumArt?: Blob | null;
   addedAt: number;
 }
 
