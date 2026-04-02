@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -35,7 +36,7 @@ export default function GlitchPlayer() {
   const currentUrlRef = useRef<string | null>(null);
   const nextTrackRef = useRef<() => void>(null);
 
-  // Initialize player first
+  // Initialize player
   const player = useAudioPlayer({
     onEnded: () => {
       if (nextTrackRef.current) {
@@ -211,7 +212,7 @@ export default function GlitchPlayer() {
           <div className="w-8 h-8 bg-primary pixel-border-sm flex items-center justify-center text-white">
             <Music size={18} strokeWidth={3} />
           </div>
-          <h1 className="font-headline text-lg tracking-tighter">GLITCH PLAYER</h1>
+          <h1 className="font-headline text-lg tracking-tighter">グリッチプレイヤー</h1>
         </div>
         
         <div className="flex items-center gap-4">

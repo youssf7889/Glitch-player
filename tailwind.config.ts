@@ -12,7 +12,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['VT323', 'monospace'],
-        headline: ['Press Start 2P', 'cursive'],
+        headline: ['DotGothic16', 'Press Start 2P', 'cursive'],
         code: ['VT323', 'monospace'],
       },
       colors: {
