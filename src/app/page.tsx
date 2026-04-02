@@ -439,7 +439,6 @@ export default function GlitchPlayer() {
               />
             </div>
           </div>
-          <ControlIcon icon={MoreVertical} size={18} />
         </div>
       </footer>
     </div>
