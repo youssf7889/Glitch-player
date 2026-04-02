@@ -348,8 +348,8 @@ export default function GlitchPlayer() {
         </main>
       </div>
 
-      <footer className="h-32 bg-accent text-white border-t-4 border-primary px-8 flex items-center gap-12">
-        <div className="w-80 flex items-center gap-4 flex-shrink-0">
+      <footer className="h-32 bg-accent text-white border-t-4 border-primary px-8 flex items-center gap-8">
+        <div className="w-72 flex items-center gap-4 flex-shrink-0">
           <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center">
             <Music size={32} />
           </div>
@@ -406,7 +406,7 @@ export default function GlitchPlayer() {
           />
         </div>
 
-        <div className="w-80 flex items-center justify-end gap-6 flex-shrink-0">
+        <div className="w-72 flex items-center justify-end gap-6 flex-shrink-0">
           <div className="flex items-center gap-4 flex-1 justify-end">
             <ControlIcon 
               icon={player.isMuted ? VolumeX : Volume2} 
