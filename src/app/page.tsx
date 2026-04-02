@@ -297,8 +297,8 @@ export default function GlitchPlayer() {
             </div>
           </div>
 
-          <div className="space-y-3">
-            <div className="grid grid-cols-12 gap-4 px-6 py-3 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase">
+          <div className="space-y-2">
+            <div className="grid grid-cols-12 gap-4 px-6 py-2 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase">
               <div className="col-span-1">#</div>
               <div className="col-span-5">Title</div>
               <div className="col-span-3">Artist</div>
@@ -311,13 +311,13 @@ export default function GlitchPlayer() {
                 key={track.id}
                 onClick={() => playTrack(track)}
                 className={cn(
-                  "grid grid-cols-12 gap-4 px-6 py-4 pixel-border-sm cursor-pointer items-center transition-all",
+                  "grid grid-cols-12 gap-4 px-6 py-2.5 pixel-border-sm cursor-pointer items-center transition-all",
                   currentTrackId === track.id 
                     ? "bg-primary/10 border-primary shadow-[6px_6px_0px_0px_hsl(var(--primary))] translate-x-1" 
                     : "bg-white hover:bg-secondary/20"
                 )}
               >
-                <div className="col-span-1 font-body text-2xl text-muted-foreground flex items-center gap-2">
+                <div className="col-span-1 font-body text-xl text-muted-foreground flex items-center gap-2">
                   <span>{(i + 1).toString().padStart(2, '0')}</span>
                   {currentTrackId === track.id && player.isPlaying && (
                     <div className="flex gap-0.5 items-end h-4 mb-1">
@@ -328,18 +328,18 @@ export default function GlitchPlayer() {
                   )}
                 </div>
                 <div className={cn(
-                  "col-span-5 font-headline text-base truncate",
+                  "col-span-5 font-headline text-sm truncate uppercase tracking-tight",
                   currentTrackId === track.id ? "text-primary" : ""
                 )}>
                   {track.name}
                 </div>
-                <div className="col-span-3 font-body text-2xl truncate">
+                <div className="col-span-3 font-body text-xl truncate">
                   {track.artist}
                 </div>
-                <div className="col-span-2 font-body text-2xl truncate text-muted-foreground">
+                <div className="col-span-2 font-body text-xl truncate text-muted-foreground">
                   {track.album}
                 </div>
-                <div className="col-span-1 font-body text-2xl text-right">
+                <div className="col-span-1 font-body text-xl text-right">
                   --:--
                 </div>
               </div>
@@ -399,7 +399,7 @@ export default function GlitchPlayer() {
                 className="text-white"
               />
               {player.repeat === 'one' && (
-                <span className="absolute -top-1 -right-1 text-[10px] font-bold bg-primary px-1 border border-white">1</span>
+                <span className="absolute -top-1 -right-1 text-[10px] font-bold bg-primary px-1 border border-white leading-none flex items-center justify-center h-4 w-4">1</span>
               )}
             </div>
           </div>
