@@ -11,7 +11,7 @@ export function ProgressBar({ current, total, onSeek }: ProgressBarProps) {
   const percentage = total > 0 ? (current / total) * 100 : 0;
 
   return (
-    <div className="flex items-center gap-3 w-full group">
+    <div className="flex items-center gap-4 w-full group">
       <span className="text-3xl font-body w-20 text-right tabular-nums text-white/90">
         {formatTime(current)}
       </span>
