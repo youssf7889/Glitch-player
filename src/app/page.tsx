@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -311,16 +312,16 @@ export default function GlitchPlayer() {
                 key={track.id}
                 onClick={() => playTrack(track)}
                 className={cn(
-                  "grid grid-cols-12 gap-4 px-6 py-2 pixel-border-sm cursor-pointer items-center transition-all",
+                  "grid grid-cols-12 gap-4 px-6 py-1.5 pixel-border-sm cursor-pointer items-center transition-all",
                   currentTrackId === track.id 
-                    ? "bg-primary/10 border-primary shadow-[6px_6px_0px_0px_hsl(var(--primary))] translate-x-1" 
+                    ? "bg-primary/10 border-primary shadow-[4px_4px_0px_0px_hsl(var(--primary))] translate-x-1" 
                     : "bg-white hover:bg-secondary/20"
                 )}
               >
                 <div className="col-span-1 font-body text-xl text-muted-foreground flex items-center gap-2">
-                  <span>{(i + 1).toString().padStart(2, '0')}</span>
+                  <span className="w-6 text-center">{(i + 1).toString().padStart(2, '0')}</span>
                   {currentTrackId === track.id && player.isPlaying && (
-                    <div className="flex gap-0.5 items-end h-4 mb-1">
+                    <div className="flex gap-0.5 items-end h-4 mb-0.5">
                       <div className="w-1 bg-primary animate-bounce [animation-duration:0.5s]" />
                       <div className="w-1 bg-primary animate-bounce [animation-duration:0.8s]" />
                       <div className="w-1 bg-primary animate-bounce [animation-duration:0.6s]" />
@@ -333,13 +334,13 @@ export default function GlitchPlayer() {
                 )}>
                   {track.name}
                 </div>
-                <div className="col-span-3 font-body text-xl truncate">
+                <div className="col-span-3 font-body text-lg truncate">
                   {track.artist}
                 </div>
-                <div className="col-span-2 font-body text-xl truncate text-muted-foreground">
+                <div className="col-span-2 font-body text-lg truncate text-muted-foreground">
                   {track.album}
                 </div>
-                <div className="col-span-1 font-body text-xl text-right">
+                <div className="col-span-1 font-body text-lg text-right">
                   --:--
                 </div>
               </div>
@@ -348,23 +349,25 @@ export default function GlitchPlayer() {
         </main>
       </div>
 
-      <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 flex items-center gap-6">
-        <div className="w-64 flex items-center gap-3 flex-shrink-0">
+      <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 flex items-center gap-4">
+        {/* Track Info */}
+        <div className="w-60 flex items-center gap-3 flex-shrink-0">
           <div className="w-12 h-12 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center">
             <Music size={24} />
           </div>
           <div className="overflow-hidden">
-            <div className="font-headline text-[10px] truncate mb-0.5 uppercase tracking-tight text-primary">
-              {currentTrack?.name || 'NO TRACK'}
+            <div className="font-headline text-[11px] truncate mb-0.5 uppercase tracking-tight text-primary">
+              {currentTrack?.name || 'NO TRACK SELECTED'}
             </div>
             <div className="font-body text-xl text-white/60 truncate uppercase">
-              {currentTrack?.artist || 'IDLE'}
+              {currentTrack?.artist || 'SYSTEM IDLE'}
             </div>
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col gap-2">
-          <div className="flex items-center justify-center gap-2">
+        {/* Playback Controls & Wide Progress Bar */}
+        <div className="flex-1 flex flex-col gap-1 items-center">
+          <div className="flex items-center justify-center gap-3">
             <ControlIcon 
               icon={Shuffle} 
               size={18}
@@ -378,9 +381,9 @@ export default function GlitchPlayer() {
             />
             <button 
               onClick={player.togglePlay}
-              className="w-10 h-10 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all mx-1"
+              className="w-9 h-9 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all mx-1"
             >
-              {player.isPlaying ? <Pause fill="white" size={20} /> : <Play fill="white" size={20} />}
+              {player.isPlaying ? <Pause fill="white" size={18} /> : <Play fill="white" size={18} />}
             </button>
             <ControlIcon 
               icon={SkipForward} 
@@ -403,21 +406,24 @@ export default function GlitchPlayer() {
               )}
             </div>
           </div>
-          <ProgressBar 
-            current={player.currentTime} 
-            total={player.duration} 
-            onSeek={player.seek} 
-          />
+          <div className="w-full">
+            <ProgressBar 
+              current={player.currentTime} 
+              total={player.duration} 
+              onSeek={player.seek} 
+            />
+          </div>
         </div>
 
-        <div className="w-64 flex items-center justify-end gap-4 flex-shrink-0">
-          <div className="flex items-center gap-3 flex-1 justify-end">
+        {/* Volume & More */}
+        <div className="w-60 flex items-center justify-end gap-4 flex-shrink-0">
+          <div className="flex items-center gap-2 flex-1 justify-end">
             <ControlIcon 
               icon={player.isMuted ? VolumeX : Volume2} 
               size={18}
               onClick={player.toggleMute} 
             />
-            <div className="w-32 h-2 bg-white/10 pixel-border-sm relative cursor-pointer group">
+            <div className="w-24 h-2 bg-white/10 pixel-border-sm relative cursor-pointer group">
               <div 
                 className="absolute top-0 left-0 h-full bg-primary"
                 style={{ width: `${player.volume * 100}%` }}
