@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -16,8 +15,7 @@ import {
   Music,
   FolderOpen,
   FolderPlus,
-  Search,
-  MoreHorizontal
+  Search
 } from 'lucide-react';
 import * as mm from 'music-metadata-browser';
 import { db, TrackMetadata, Playlist } from '@/lib/db';
@@ -438,16 +436,16 @@ export default function GlitchPlayer() {
                     </div>
                     <div className="col-span-5 flex items-center gap-3 min-w-0">
                       <div className={cn(
-                        "font-headline text-base truncate uppercase tracking-tight",
-                        currentTrackId === track.id ? "text-primary font-bold" : ""
+                        "font-headline text-lg font-bold truncate uppercase tracking-tight",
+                        currentTrackId === track.id ? "text-primary" : ""
                       )}>
                         {track.name}
                       </div>
                     </div>
-                    <div className="col-span-3 font-body text-lg truncate">
+                    <div className="col-span-3 font-body text-lg truncate opacity-70">
                       {track.artist}
                     </div>
-                    <div className="col-span-2 font-body text-lg truncate text-muted-foreground">
+                    <div className="col-span-2 font-body text-lg truncate text-muted-foreground opacity-70">
                       {track.album}
                     </div>
                     <div className="col-span-1 font-body text-lg text-right">

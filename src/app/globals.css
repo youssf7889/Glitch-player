@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -38,7 +37,7 @@
   }
 }
 
-/* Minimalist Scrollbar */
+/* Minimalist Retro Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
