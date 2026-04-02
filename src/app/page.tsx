@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -329,7 +328,7 @@ export default function GlitchPlayer() {
                   )}
                 </div>
                 <div className={cn(
-                  "col-span-5 font-headline text-xs truncate uppercase tracking-tight",
+                  "col-span-5 font-headline text-base truncate uppercase tracking-tight",
                   currentTrackId === track.id ? "text-primary" : ""
                 )}>
                   {track.name}
