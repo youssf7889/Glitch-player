@@ -16,7 +16,8 @@ import {
   Music,
   FolderOpen,
   FolderPlus,
-  Search
+  Search,
+  MoreHorizontal
 } from 'lucide-react';
 import { db, TrackMetadata, Playlist } from '@/lib/db';
 import { useAudioPlayer } from '@/hooks/use-audio-player';
@@ -348,25 +349,26 @@ export default function GlitchPlayer() {
         </main>
       </div>
 
-      <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 flex items-center justify-between gap-4">
-        {/* Track Info */}
-        <div className="w-48 flex items-center gap-3 flex-shrink-0 min-w-0">
-          <div className="w-10 h-10 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center">
-            <Music size={20} />
+      <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1fr_2fr_1fr] items-center">
+        {/* Left Column: Track Info */}
+        <div className="flex items-center gap-4 justify-start min-w-0 overflow-hidden">
+          <div className="w-14 h-14 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center">
+            <Music size={24} />
           </div>
           <div className="overflow-hidden">
-            <div className="font-headline text-[10px] truncate mb-0.5 uppercase tracking-tight text-primary">
+            <div className="font-headline text-sm truncate mb-0.5 uppercase tracking-tight text-primary">
               {currentTrack?.name || 'IDLE'}
             </div>
-            <div className="font-body text-lg text-white/60 truncate uppercase">
+            <div className="font-body text-2xl text-white/80 truncate uppercase">
               {currentTrack?.artist || 'SYSTEM'}
             </div>
           </div>
         </div>
 
-        {/* Playback Controls & Wide Progress Bar */}
-        <div className="flex-grow min-w-[60vw] flex flex-col gap-1 items-center px-4">
-          <div className="flex items-center justify-center gap-3 mb-1">
+        {/* Center Column: Stacked Controls & Progress Bar */}
+        <div className="flex flex-col items-center justify-center w-full px-4 gap-2">
+          {/* Top row: Playback Controls */}
+          <div className="flex items-center justify-center gap-4">
             <ControlIcon 
               icon={Shuffle} 
               size={18}
@@ -375,18 +377,18 @@ export default function GlitchPlayer() {
             />
             <ControlIcon 
               icon={SkipBack} 
-              size={18}
+              size={20}
               onClick={prevTrack} 
             />
             <button 
               onClick={player.togglePlay}
-              className="w-9 h-9 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all mx-1"
+              className="w-10 h-10 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all mx-2"
             >
-              {player.isPlaying ? <Pause fill="white" size={18} /> : <Play fill="white" size={18} />}
+              {player.isPlaying ? <Pause fill="white" size={20} /> : <Play fill="white" size={20} />}
             </button>
             <ControlIcon 
               icon={SkipForward} 
-              size={18}
+              size={20}
               onClick={nextTrack} 
             />
             <div className="relative">
@@ -405,7 +407,8 @@ export default function GlitchPlayer() {
               )}
             </div>
           </div>
-          <div className="w-full flex-grow flex items-center">
+          {/* Bottom row: Progress Bar - Force 100% of the column width */}
+          <div className="w-full">
             <ProgressBar 
               current={player.currentTime} 
               total={player.duration} 
@@ -414,15 +417,15 @@ export default function GlitchPlayer() {
           </div>
         </div>
 
-        {/* Volume - Wider as requested */}
-        <div className="w-64 flex items-center justify-end gap-3 flex-shrink-0 min-w-0">
-          <div className="flex items-center gap-4 flex-1 justify-end min-w-0">
+        {/* Right Column: Volume and Menu icons */}
+        <div className="flex items-center justify-end gap-6 min-w-0">
+          <div className="flex items-center gap-3 w-48">
             <ControlIcon 
               icon={player.isMuted ? VolumeX : Volume2} 
-              size={18}
+              size={20}
               onClick={player.toggleMute} 
             />
-            <div className="w-48 h-2 bg-white/10 pixel-border-sm relative cursor-pointer group">
+            <div className="flex-1 h-2 bg-white/10 pixel-border-sm relative cursor-pointer group">
               <div 
                 className="absolute top-0 left-0 h-full bg-primary"
                 style={{ width: `${player.volume * 100}%` }}
@@ -438,6 +441,7 @@ export default function GlitchPlayer() {
               />
             </div>
           </div>
+          <ControlIcon icon={MoreHorizontal} size={20} />
         </div>
       </footer>
     </div>
