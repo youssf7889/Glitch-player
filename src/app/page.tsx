@@ -321,7 +321,7 @@ export default function GlitchPlayer() {
           <div className="w-8 h-8 bg-primary pixel-border-sm flex items-center justify-center text-white">
             <Music size={18} strokeWidth={3} />
           </div>
-          <h1 className="font-headline text-lg tracking-tighter uppercase text-primary">グリッチプレイヤー</h1>
+          <h1 className="font-headline text-2xl tracking-tighter uppercase text-primary">グリッチプレイヤー</h1>
         </div>
         
         <div className="flex items-center gap-4">
@@ -334,16 +334,11 @@ export default function GlitchPlayer() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <label className="cursor-pointer h-10 px-4 flex items-center gap-2 bg-primary text-white pixel-border-sm hover:translate-y-0.5 transition-all">
-            <Upload size={16} />
-            <span className="text-lg font-headline">UPLOAD</span>
-            <input type="file" multiple className="hidden" onChange={handleFileUpload} accept="audio/*" />
-          </label>
         </div>
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        <aside className="w-80 border-r-4 border-accent bg-secondary/10 overflow-y-auto">
+        <aside className="w-64 border-r-4 border-accent bg-secondary/10 overflow-y-auto">
           <div className="p-4 space-y-6">
             <div className="flex items-center justify-between mb-2">
               <span className="font-headline text-sm text-muted-foreground uppercase tracking-widest">Library</span>
