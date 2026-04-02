@@ -1,9 +1,7 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
 import { 
-  Plus, 
   Upload, 
   Trash2, 
   Play, 
@@ -18,7 +16,6 @@ import {
   FolderOpen,
   FolderPlus,
   Search,
-  Settings,
   MoreVertical
 } from 'lucide-react';
 import { db, TrackMetadata, Playlist } from '@/lib/db';
@@ -79,7 +76,6 @@ export default function GlitchPlayer() {
     if (audioFiles.length === 0) return;
 
     // Extract folder name from the first file's relative path
-    // Example webkitRelativePath: "MyAlbum/song1.mp3"
     const firstPath = (audioFiles[0] as any).webkitRelativePath;
     const folderName = firstPath ? firstPath.split('/')[0] : "New Folder Playlist";
 
@@ -112,19 +108,6 @@ export default function GlitchPlayer() {
     
     // Clear input
     e.target.value = '';
-  };
-
-  const createPlaylist = async () => {
-    const name = prompt("Enter playlist name:");
-    if (!name) return;
-    const newPlaylist: Playlist = {
-      id: crypto.randomUUID(),
-      name,
-      trackIds: [],
-      createdAt: Date.now()
-    };
-    await db.savePlaylist(newPlaylist);
-    loadData();
   };
 
   const deletePlaylist = async (id: string) => {
@@ -216,9 +199,6 @@ export default function GlitchPlayer() {
             <div className="flex items-center justify-between mb-2">
               <span className="font-headline text-[10px] text-muted-foreground uppercase tracking-widest">Library</span>
               <div className="flex gap-2">
-                <button onClick={createPlaylist} title="Create Playlist" className="p-1 hover:text-primary transition-colors">
-                  <Plus size={20} strokeWidth={3} />
-                </button>
                 <label title="Upload Folder as Playlist" className="p-1 hover:text-primary transition-colors cursor-pointer">
                   <FolderPlus size={20} strokeWidth={3} />
                   <input 
