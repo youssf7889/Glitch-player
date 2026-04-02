@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -206,6 +207,7 @@ export default function GlitchPlayer() {
       if (fullPath) {
         const parts = fullPath.split('/');
         // Use the immediate parent of the file to support multiple folder grouping
+        // This allows selecting a parent directory that contains multiple albums
         if (parts.length > 1) {
           folderName = parts[parts.length - 2];
         } else {
@@ -232,6 +234,7 @@ export default function GlitchPlayer() {
       folderMap.get(folderName)!.push(track.id);
     }
 
+    let firstNewPlaylistId: string | null = null;
     for (const [name, trackIds] of folderMap.entries()) {
       const newPlaylist: Playlist = {
         id: crypto.randomUUID(),
@@ -240,7 +243,11 @@ export default function GlitchPlayer() {
         createdAt: Date.now()
       };
       await db.savePlaylist(newPlaylist);
-      if (!activePlaylistId) setActivePlaylistId(newPlaylist.id);
+      if (!firstNewPlaylistId) firstNewPlaylistId = newPlaylist.id;
+    }
+
+    if (firstNewPlaylistId && !activePlaylistId) {
+      setActivePlaylistId(firstNewPlaylistId);
     }
 
     await loadData();
