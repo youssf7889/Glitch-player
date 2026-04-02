@@ -35,6 +35,14 @@ export default function GlitchPlayer() {
   const currentUrlRef = useRef<string | null>(null);
   const nextTrackRef = useRef<() => void>(null);
 
+  const player = useAudioPlayer({
+    onEnded: () => {
+      if (nextTrackRef.current) {
+        nextTrackRef.current();
+      }
+    }
+  });
+
   const loadData = useCallback(async () => {
     const allTracks = await db.getAllTracks();
     const allPlaylists = await db.getPlaylists();
@@ -50,15 +58,7 @@ export default function GlitchPlayer() {
     currentUrlRef.current = url;
     setCurrentTrackId(track.id);
     player.play(url);
-  }, []);
-
-  const player = useAudioPlayer({
-    onEnded: () => {
-      if (nextTrackRef.current) {
-        nextTrackRef.current();
-      }
-    }
-  });
+  }, [player]);
 
   const currentTracks = tracks.filter(t => {
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -317,15 +317,14 @@ export default function GlitchPlayer() {
                     : "bg-white hover:bg-secondary/20"
                 )}
               >
-                <div className="col-span-1 font-body text-2xl text-muted-foreground">
-                  {currentTrackId === track.id && player.isPlaying ? (
-                    <div className="flex gap-1 items-end h-5">
-                      <div className="w-1.5 bg-primary animate-bounce [animation-duration:0.5s]" />
-                      <div className="w-1.5 bg-primary animate-bounce [animation-duration:0.8s]" />
-                      <div className="w-1.5 bg-primary animate-bounce [animation-duration:0.6s]" />
+                <div className="col-span-1 font-body text-2xl text-muted-foreground flex items-center gap-2">
+                  <span>{(i + 1).toString().padStart(2, '0')}</span>
+                  {currentTrackId === track.id && player.isPlaying && (
+                    <div className="flex gap-0.5 items-end h-4 mb-1">
+                      <div className="w-1 bg-primary animate-bounce [animation-duration:0.5s]" />
+                      <div className="w-1 bg-primary animate-bounce [animation-duration:0.8s]" />
+                      <div className="w-1 bg-primary animate-bounce [animation-duration:0.6s]" />
                     </div>
-                  ) : (
-                    (i + 1).toString().padStart(2, '0')
                   )}
                 </div>
                 <div className={cn(
