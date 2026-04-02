@@ -209,7 +209,7 @@ export default function GlitchPlayer() {
           <div className="w-8 h-8 bg-primary pixel-border-sm flex items-center justify-center text-white">
             <Music size={18} strokeWidth={3} />
           </div>
-          <h1 className="font-headline text-lg tracking-tighter uppercase">グリッチプレイヤー</h1>
+          <h1 className="font-headline text-lg tracking-tighter uppercase text-primary">グリッチプレイヤー</h1>
         </div>
         
         <div className="flex items-center gap-4">
@@ -311,7 +311,7 @@ export default function GlitchPlayer() {
                 key={track.id}
                 onClick={() => playTrack(track)}
                 className={cn(
-                  "grid grid-cols-12 gap-4 px-6 py-2.5 pixel-border-sm cursor-pointer items-center transition-all",
+                  "grid grid-cols-12 gap-4 px-6 py-2 pixel-border-sm cursor-pointer items-center transition-all",
                   currentTrackId === track.id 
                     ? "bg-primary/10 border-primary shadow-[6px_6px_0px_0px_hsl(var(--primary))] translate-x-1" 
                     : "bg-white hover:bg-secondary/20"
@@ -328,7 +328,7 @@ export default function GlitchPlayer() {
                   )}
                 </div>
                 <div className={cn(
-                  "col-span-5 font-headline text-sm truncate uppercase tracking-tight",
+                  "col-span-5 font-headline text-xs truncate uppercase tracking-tight",
                   currentTrackId === track.id ? "text-primary" : ""
                 )}>
                   {track.name}
@@ -348,7 +348,7 @@ export default function GlitchPlayer() {
         </main>
       </div>
 
-      <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 flex items-center gap-8">
+      <footer className="h-28 bg-accent text-white border-t-4 border-primary px-6 flex items-center gap-8">
         <div className="w-80 flex items-center gap-4">
           <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center">
             <Music size={32} />
@@ -363,8 +363,8 @@ export default function GlitchPlayer() {
           </div>
         </div>
 
-        <div className="flex-1 max-w-2xl flex flex-col gap-2">
-          <div className="flex items-center justify-center gap-6">
+        <div className="flex-1 max-w-2xl flex flex-col gap-3">
+          <div className="flex items-center justify-center gap-4">
             <ControlIcon 
               icon={Shuffle} 
               active={player.shuffle} 
@@ -378,7 +378,7 @@ export default function GlitchPlayer() {
             />
             <button 
               onClick={player.togglePlay}
-              className="w-14 h-14 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all"
+              className="w-14 h-14 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all mx-2"
             >
               {player.isPlaying ? <Pause fill="white" size={28} /> : <Play fill="white" size={28} />}
             </button>
