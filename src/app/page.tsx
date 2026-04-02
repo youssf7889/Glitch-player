@@ -56,7 +56,6 @@ export default function GlitchPlayer() {
     tracks.find(t => t.id === currentTrackId), 
   [tracks, currentTrackId]);
 
-  // Manage Album Art Object URL for the footer
   useEffect(() => {
     if (currentTrack?.albumArt) {
       const url = URL.createObjectURL(currentTrack.albumArt);
@@ -151,7 +150,6 @@ export default function GlitchPlayer() {
         albumArt
       };
     } catch (e) {
-      console.error("Metadata extraction failed", e);
       return {
         name: file.name.replace(/\.[^/.]+$/, ""),
         artist: "Unknown Artist",
@@ -192,15 +190,14 @@ export default function GlitchPlayer() {
     
     const fileList = Array.from(files);
     const audioFiles = fileList.filter(f => f.type.startsWith('audio/'));
-    
     if (audioFiles.length === 0) return;
 
-    const firstPath = (audioFiles[0] as any).webkitRelativePath;
-    const folderName = firstPath ? firstPath.split('/')[0] : "New Folder Playlist";
-
-    const newTrackIds: string[] = [];
+    const folderMap = new Map<string, string[]>();
 
     for (const file of audioFiles) {
+      const path = (file as any).webkitRelativePath;
+      const folderName = path ? path.split('/')[0] : "Uploaded Tracks";
+      
       const meta = await extractMetadata(file);
       const track: TrackMetadata = {
         id: crypto.randomUUID(),
@@ -213,20 +210,24 @@ export default function GlitchPlayer() {
         addedAt: Date.now()
       };
       await db.saveTrack(track);
-      newTrackIds.push(track.id);
+
+      if (!folderMap.has(folderName)) {
+        folderMap.set(folderName, []);
+      }
+      folderMap.get(folderName)!.push(track.id);
     }
 
-    const newPlaylist: Playlist = {
-      id: crypto.randomUUID(),
-      name: folderName,
-      trackIds: newTrackIds,
-      createdAt: Date.now()
-    };
+    for (const [name, trackIds] of folderMap.entries()) {
+      const newPlaylist: Playlist = {
+        id: crypto.randomUUID(),
+        name,
+        trackIds,
+        createdAt: Date.now()
+      };
+      await db.savePlaylist(newPlaylist);
+    }
 
-    await db.savePlaylist(newPlaylist);
     await loadData();
-    setActivePlaylistId(newPlaylist.id);
-    
     e.target.value = '';
   };
 
@@ -293,7 +294,7 @@ export default function GlitchPlayer() {
             <div className="flex items-center justify-between mb-2">
               <span className="font-headline text-sm text-muted-foreground uppercase tracking-widest">Library</span>
               <div className="flex gap-2">
-                <label title="Upload Folder as Playlist" className="p-1 hover:text-primary transition-colors cursor-pointer">
+                <label title="Upload Folders as Playlists" className="p-1 hover:text-primary transition-colors cursor-pointer">
                   <FolderPlus size={20} strokeWidth={3} />
                   <input 
                     type="file" 
@@ -307,17 +308,6 @@ export default function GlitchPlayer() {
             </div>
             
             <nav className="space-y-4">
-              <button 
-                onClick={() => setActivePlaylistId('all')}
-                className={cn(
-                  "w-full flex items-center gap-4 px-5 py-5 text-left font-headline text-base transition-all pixel-border-sm",
-                  activePlaylistId === 'all' ? "bg-primary text-white" : "bg-background hover:bg-secondary/50"
-                )}
-              >
-                <Music size={20} />
-                ALL TRACKS
-              </button>
-
               {playlists.map(playlist => (
                 <div key={playlist.id} className="relative group">
                   <button 
@@ -408,7 +398,6 @@ export default function GlitchPlayer() {
       </div>
 
       <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1fr_2fr_1fr] items-center">
-        {/* Left Column: Track Info */}
         <div className="flex items-center gap-4 justify-start min-w-0 overflow-hidden pr-4">
           <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden">
             {currentArtUrl ? (
@@ -427,9 +416,7 @@ export default function GlitchPlayer() {
           </div>
         </div>
 
-        {/* Center Column: Stacked Controls & Progress Bar */}
         <div className="flex flex-col items-center justify-center w-full px-4 gap-2">
-          {/* Top row: Playback Controls */}
           <div className="flex items-center justify-center gap-4">
             <ControlIcon 
               icon={Shuffle} 
@@ -469,7 +456,6 @@ export default function GlitchPlayer() {
               )}
             </div>
           </div>
-          {/* Bottom row: Progress Bar */}
           <div className="w-full">
             <ProgressBar 
               current={player.currentTime} 
@@ -479,7 +465,6 @@ export default function GlitchPlayer() {
           </div>
         </div>
 
-        {/* Right Column: Volume and Menu icons */}
         <div className="flex items-center justify-end gap-6 min-w-0 pl-4">
           <div className="flex items-center gap-3 w-48">
             <ControlIcon 
@@ -503,7 +488,6 @@ export default function GlitchPlayer() {
               />
             </div>
           </div>
-          <ControlIcon icon={MoreHorizontal} size={20} />
         </div>
       </footer>
     </div>
