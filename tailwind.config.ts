@@ -13,7 +13,7 @@ export default {
       fontFamily: {
         body: ['VT323', 'monospace'],
         headline: ['DotGothic16', 'Press Start 2P', 'cursive'],
-        code: ['VT323', 'monospace'],
+        mono: ['VT323', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',

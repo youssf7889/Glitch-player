@@ -27,6 +27,7 @@ import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 
 export default function GlitchPlayer() {
+  // 1. All hooks at the top
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [activePlaylistId, setActivePlaylistId] = useState<string>('all');
   const [tracks, setTracks] = useState<TrackMetadata[]>([]);
@@ -220,14 +221,14 @@ export default function GlitchPlayer() {
             <Search className="absolute left-3 text-muted-foreground" size={16} />
             <Input 
               placeholder="SEARCH TRACKS..." 
-              className="pl-10 h-10 w-64 pixel-border-sm bg-background font-mono text-sm focus:ring-0"
+              className="pl-10 h-10 w-64 pixel-border-sm bg-background font-body text-lg focus:ring-0"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <label className="cursor-pointer h-10 px-4 flex items-center gap-2 bg-primary text-white pixel-border-sm hover:translate-y-0.5 transition-all">
             <Upload size={16} />
-            <span className="text-xs font-headline">UPLOAD</span>
+            <span className="text-sm font-headline">UPLOAD</span>
             <input type="file" multiple className="hidden" onChange={handleFileUpload} accept="audio/*" />
           </label>
         </div>
@@ -237,7 +238,7 @@ export default function GlitchPlayer() {
         <aside className="w-72 border-r-4 border-accent bg-secondary/10 overflow-y-auto">
           <div className="p-4 space-y-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-headline text-[10px] text-muted-foreground uppercase tracking-widest">Library</span>
+              <span className="font-headline text-xs text-muted-foreground uppercase tracking-widest">Library</span>
               <div className="flex gap-2">
                 <label title="Upload Folder as Playlist" className="p-1 hover:text-primary transition-colors cursor-pointer">
                   <FolderPlus size={20} strokeWidth={3} />
@@ -256,7 +257,7 @@ export default function GlitchPlayer() {
               <button 
                 onClick={() => setActivePlaylistId('all')}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 text-left font-headline text-[11px] transition-all pixel-border-sm",
+                  "w-full flex items-center gap-3 px-4 py-3 text-left font-headline text-xs transition-all pixel-border-sm",
                   activePlaylistId === 'all' ? "bg-primary text-white" : "bg-background hover:bg-secondary/50"
                 )}
               >
@@ -269,7 +270,7 @@ export default function GlitchPlayer() {
                   <button 
                     onClick={() => setActivePlaylistId(playlist.id)}
                     className={cn(
-                      "w-full flex items-center gap-3 px-4 py-3 text-left font-headline text-[11px] transition-all pixel-border-sm",
+                      "w-full flex items-center gap-3 px-4 py-3 text-left font-headline text-xs transition-all pixel-border-sm",
                       activePlaylistId === playlist.id ? "bg-primary text-white" : "bg-background hover:bg-secondary/50"
                     )}
                   >
@@ -294,14 +295,14 @@ export default function GlitchPlayer() {
               <h2 className="font-headline text-2xl mb-1">
                 {activePlaylistId === 'all' ? 'ALL TRACKS' : playlists.find(p => p.id === activePlaylistId)?.name.toUpperCase()}
               </h2>
-              <p className="text-sm font-mono text-muted-foreground">
+              <p className="text-lg font-body text-muted-foreground">
                 {currentTracks.length} SONGS FOUND
               </p>
             </div>
           </div>
 
           <div className="space-y-2">
-            <div className="grid grid-cols-12 gap-4 px-4 py-2 text-[10px] font-headline text-muted-foreground border-b-2 border-muted uppercase">
+            <div className="grid grid-cols-12 gap-4 px-4 py-2 text-xs font-headline text-muted-foreground border-b-2 border-muted uppercase">
               <div className="col-span-1">#</div>
               <div className="col-span-5">Title</div>
               <div className="col-span-3">Artist</div>
@@ -318,7 +319,7 @@ export default function GlitchPlayer() {
                   currentTrackId === track.id ? "bg-primary/5 border-primary shadow-[2px_2px_0px_0px_hsl(var(--primary))]" : "bg-white"
                 )}
               >
-                <div className="col-span-1 font-mono text-sm text-muted-foreground">
+                <div className="col-span-1 font-body text-lg text-muted-foreground">
                   {currentTrackId === track.id && player.isPlaying ? (
                     <div className="flex gap-0.5 items-end h-3">
                       <div className="w-1 bg-primary animate-bounce [animation-duration:0.5s]" />
@@ -329,16 +330,16 @@ export default function GlitchPlayer() {
                     (i + 1).toString().padStart(2, '0')
                   )}
                 </div>
-                <div className="col-span-5 font-headline text-[12px] truncate">
+                <div className="col-span-5 font-headline text-sm truncate">
                   {track.name}
                 </div>
-                <div className="col-span-3 font-mono text-sm truncate">
+                <div className="col-span-3 font-body text-lg truncate">
                   {track.artist}
                 </div>
-                <div className="col-span-2 font-mono text-sm truncate text-muted-foreground">
+                <div className="col-span-2 font-body text-lg truncate text-muted-foreground">
                   {track.album}
                 </div>
-                <div className="col-span-1 font-mono text-sm text-right">
+                <div className="col-span-1 font-body text-lg text-right">
                   --:--
                 </div>
               </div>
@@ -353,10 +354,10 @@ export default function GlitchPlayer() {
             <Music size={32} />
           </div>
           <div className="overflow-hidden">
-            <div className="font-headline text-[12px] truncate mb-1">
+            <div className="font-headline text-xs truncate mb-1">
               {currentTrack?.name || 'NO TRACK SELECTED'}
             </div>
-            <div className="font-mono text-xs text-secondary/60 truncate uppercase">
+            <div className="font-body text-sm text-secondary/60 truncate uppercase">
               {currentTrack?.artist || 'SYSTEM IDLE'}
             </div>
           </div>
@@ -398,7 +399,7 @@ export default function GlitchPlayer() {
                 className="text-white"
               />
               {player.repeat === 'one' && (
-                <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-primary px-1 border border-white">1</span>
+                <span className="absolute -top-1 -right-1 text-[10px] font-bold bg-primary px-1 border border-white">1</span>
               )}
             </div>
           </div>
