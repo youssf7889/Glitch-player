@@ -1,3 +1,356 @@
-export default function Home() {
-  return <></>;
+
+"use client";
+
+import { useState, useEffect, useCallback } from 'react';
+import { 
+  Plus, 
+  Upload, 
+  Trash2, 
+  Play, 
+  Pause, 
+  SkipBack, 
+  SkipForward, 
+  Shuffle, 
+  Repeat, 
+  Volume2, 
+  VolumeX,
+  Music,
+  FolderOpen,
+  Search,
+  Settings,
+  MoreVertical
+} from 'lucide-react';
+import { db, TrackMetadata, Playlist } from '@/lib/db';
+import { useAudioPlayer } from '@/hooks/use-audio-player';
+import { ProgressBar } from '@/components/player/ProgressBar';
+import { ControlIcon } from '@/components/player/ControlIcon';
+import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+
+export default function GlitchPlayer() {
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [activePlaylistId, setActivePlaylistId] = useState<string>('all');
+  const [tracks, setTracks] = useState<TrackMetadata[]>([]);
+  const [currentTrackId, setCurrentTrackId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const player = useAudioPlayer();
+
+  const loadData = useCallback(async () => {
+    const allTracks = await db.getAllTracks();
+    const allPlaylists = await db.getPlaylists();
+    setTracks(allTracks);
+    setPlaylists(allPlaylists);
+  }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const files = Array.from(e.target.files);
+    
+    for (const file of files) {
+      if (!file.type.startsWith('audio/')) continue;
+      
+      const track: TrackMetadata = {
+        id: crypto.randomUUID(),
+        name: file.name.replace(/\.[^/.]+$/, ""),
+        artist: "Unknown Artist",
+        album: "Unknown Album",
+        duration: 0, // Will be updated on load
+        blob: file,
+        addedAt: Date.now()
+      };
+      await db.saveTrack(track);
+    }
+    loadData();
+  };
+
+  const createPlaylist = async () => {
+    const name = prompt("Enter playlist name:");
+    if (!name) return;
+    const newPlaylist: Playlist = {
+      id: crypto.randomUUID(),
+      name,
+      trackIds: [],
+      createdAt: Date.now()
+    };
+    await db.savePlaylist(newPlaylist);
+    loadData();
+  };
+
+  const deletePlaylist = async (id: string) => {
+    if (confirm("Delete this playlist?")) {
+      await db.deletePlaylist(id);
+      if (activePlaylistId === id) setActivePlaylistId('all');
+      loadData();
+    }
+  };
+
+  const currentTracks = tracks.filter(t => {
+    const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          t.artist.toLowerCase().includes(searchQuery.toLowerCase());
+    if (activePlaylistId === 'all') return matchesSearch;
+    const playlist = playlists.find(p => p.id === activePlaylistId);
+    return playlist?.trackIds.includes(t.id) && matchesSearch;
+  });
+
+  const currentTrack = tracks.find(t => t.id === currentTrackId);
+
+  const playTrack = async (track: TrackMetadata) => {
+    const url = URL.createObjectURL(track.blob);
+    setCurrentTrackId(track.id);
+    player.play(url);
+  };
+
+  const nextTrack = () => {
+    if (!currentTrackId || currentTracks.length === 0) return;
+    const idx = currentTracks.findIndex(t => t.id === currentTrackId);
+    const nextIdx = (idx + 1) % currentTracks.length;
+    playTrack(currentTracks[nextIdx]);
+  };
+
+  const prevTrack = () => {
+    if (!currentTrackId || currentTracks.length === 0) return;
+    const idx = currentTracks.findIndex(t => t.id === currentTrackId);
+    const prevIdx = (idx - 1 + currentTracks.length) % currentTracks.length;
+    playTrack(currentTracks[prevIdx]);
+  };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement) return;
+      if (e.code === 'Space') {
+        e.preventDefault();
+        player.togglePlay();
+      }
+      if (e.code === 'ArrowRight') nextTrack();
+      if (e.code === 'ArrowLeft') prevTrack();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [player, currentTracks, currentTrackId]);
+
+  return (
+    <div className="h-screen w-full flex flex-col overflow-hidden bg-background text-foreground font-body select-none">
+      {/* Header */}
+      <header className="h-16 flex items-center justify-between px-6 border-b-4 border-accent bg-secondary/30">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-primary pixel-border-sm flex items-center justify-center text-white">
+            <Music size={18} strokeWidth={3} />
+          </div>
+          <h1 className="font-headline text-lg tracking-tighter">GLITCH PLAYER</h1>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <div className="relative flex items-center">
+            <Search className="absolute left-3 text-muted-foreground" size={16} />
+            <Input 
+              placeholder="SEARCH TRACKS..." 
+              className="pl-10 h-10 w-64 pixel-border-sm bg-background font-mono text-sm focus:ring-0"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <label className="cursor-pointer h-10 px-4 flex items-center gap-2 bg-primary text-white pixel-border-sm hover:translate-y-0.5 transition-all">
+            <Upload size={16} />
+            <span className="text-xs font-headline">UPLOAD</span>
+            <input type="file" multiple className="hidden" onChange={handleFileUpload} accept="audio/*" />
+          </label>
+        </div>
+      </header>
+
+      <div className="flex-1 flex overflow-hidden">
+        {/* Sidebar - Playlists */}
+        <aside className="w-72 border-r-4 border-accent bg-secondary/10 overflow-y-auto">
+          <div className="p-4 space-y-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-headline text-[10px] text-muted-foreground uppercase tracking-widest">Library</span>
+              <button onClick={createPlaylist} className="p-1 hover:text-primary transition-colors">
+                <Plus size={20} strokeWidth={3} />
+              </button>
+            </div>
+            
+            <nav className="space-y-2">
+              <button 
+                onClick={() => setActivePlaylistId('all')}
+                className={cn(
+                  "w-full flex items-center gap-3 px-4 py-3 text-left font-headline text-[11px] transition-all pixel-border-sm",
+                  activePlaylistId === 'all' ? "bg-primary text-white" : "bg-background hover:bg-secondary/50"
+                )}
+              >
+                <Music size={14} />
+                ALL TRACKS
+              </button>
+
+              {playlists.map(playlist => (
+                <div key={playlist.id} className="relative group">
+                  <button 
+                    onClick={() => setActivePlaylistId(playlist.id)}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-4 py-3 text-left font-headline text-[11px] transition-all pixel-border-sm",
+                      activePlaylistId === playlist.id ? "bg-primary text-white" : "bg-background hover:bg-secondary/50"
+                    )}
+                  >
+                    <FolderOpen size={14} />
+                    {playlist.name.toUpperCase()}
+                  </button>
+                  <button 
+                    onClick={() => deletePlaylist(playlist.id)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-destructive hover:scale-110 transition-all p-1"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </nav>
+          </div>
+        </aside>
+
+        {/* Main Track List */}
+        <main className="flex-1 overflow-y-auto p-6 bg-background">
+          <div className="mb-6 flex items-end justify-between">
+            <div>
+              <h2 className="font-headline text-2xl mb-1">
+                {activePlaylistId === 'all' ? 'ALL TRACKS' : playlists.find(p => p.id === activePlaylistId)?.name.toUpperCase()}
+              </h2>
+              <p className="text-sm font-mono text-muted-foreground">
+                {currentTracks.length} SONGS FOUND
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="grid grid-cols-12 gap-4 px-4 py-2 text-[10px] font-headline text-muted-foreground border-b-2 border-muted uppercase">
+              <div className="col-span-1">#</div>
+              <div className="col-span-5">Title</div>
+              <div className="col-span-3">Artist</div>
+              <div className="col-span-2">Album</div>
+              <div className="col-span-1 text-right">Dur</div>
+            </div>
+
+            {currentTracks.map((track, i) => (
+              <div 
+                key={track.id}
+                onClick={() => playTrack(track)}
+                className={cn(
+                  "grid grid-cols-12 gap-4 px-4 py-3 pixel-border-sm cursor-pointer items-center transition-all hover:bg-secondary/20",
+                  currentTrackId === track.id ? "bg-primary/5 border-primary shadow-[2px_2px_0px_0px_hsl(var(--primary))]" : "bg-white"
+                )}
+              >
+                <div className="col-span-1 font-mono text-sm text-muted-foreground">
+                  {currentTrackId === track.id && player.isPlaying ? (
+                    <div className="flex gap-0.5 items-end h-3">
+                      <div className="w-1 bg-primary animate-bounce [animation-duration:0.5s]" />
+                      <div className="w-1 bg-primary animate-bounce [animation-duration:0.8s]" />
+                      <div className="w-1 bg-primary animate-bounce [animation-duration:0.6s]" />
+                    </div>
+                  ) : (
+                    (i + 1).toString().padStart(2, '0')
+                  )}
+                </div>
+                <div className="col-span-5 font-headline text-[12px] truncate">
+                  {track.name}
+                </div>
+                <div className="col-span-3 font-mono text-sm truncate">
+                  {track.artist}
+                </div>
+                <div className="col-span-2 font-mono text-sm truncate text-muted-foreground">
+                  {track.album}
+                </div>
+                <div className="col-span-1 font-mono text-sm text-right">
+                  --:--
+                </div>
+              </div>
+            ))}
+          </div>
+        </main>
+      </div>
+
+      {/* Bottom Player Bar */}
+      <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 flex items-center gap-8">
+        {/* Track Info */}
+        <div className="w-80 flex items-center gap-4">
+          <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center">
+            <Music size={32} />
+          </div>
+          <div className="overflow-hidden">
+            <div className="font-headline text-[12px] truncate mb-1">
+              {currentTrack?.name || 'NO TRACK SELECTED'}
+            </div>
+            <div className="font-mono text-xs text-secondary/60 truncate uppercase">
+              {currentTrack?.artist || 'SYSTEM IDLE'}
+            </div>
+          </div>
+        </div>
+
+        {/* Playback Controls */}
+        <div className="flex-1 max-w-2xl flex flex-col gap-2">
+          <div className="flex items-center justify-center gap-6">
+            <ControlIcon 
+              icon={Shuffle} 
+              active={player.shuffle} 
+              onClick={() => player.setShuffle(!player.shuffle)} 
+              className="text-white/60 hover:text-white"
+            />
+            <ControlIcon 
+              icon={SkipBack} 
+              onClick={prevTrack} 
+              className="text-white"
+            />
+            <button 
+              onClick={player.togglePlay}
+              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border-sm hover:scale-105 transition-all"
+            >
+              {player.isPlaying ? <Pause fill="white" size={24} /> : <Play fill="white" size={24} />}
+            </button>
+            <ControlIcon 
+              icon={SkipForward} 
+              onClick={nextTrack} 
+              className="text-white"
+            />
+            <ControlIcon 
+              icon={Repeat} 
+              active={player.repeat !== 'none'} 
+              onClick={() => player.setRepeat(player.repeat === 'none' ? 'all' : 'none')} 
+              className="text-white/60 hover:text-white"
+            />
+          </div>
+          <ProgressBar 
+            current={player.currentTime} 
+            total={player.duration} 
+            onSeek={player.seek} 
+          />
+        </div>
+
+        {/* Volume & Extras */}
+        <div className="w-64 flex items-center justify-end gap-4">
+          <ControlIcon 
+            icon={player.isMuted ? VolumeX : Volume2} 
+            onClick={player.toggleMute} 
+            className="text-white"
+          />
+          <div className="w-32 h-2 bg-secondary/20 pixel-border-sm relative cursor-pointer">
+            <div 
+              className="absolute top-0 left-0 h-full bg-primary"
+              style={{ width: `${player.volume * 100}%` }}
+            />
+            <input 
+              type="range" 
+              min="0" 
+              max="1" 
+              step="0.01" 
+              value={player.volume}
+              onChange={(e) => player.changeVolume(parseFloat(e.target.value))}
+              className="absolute inset-0 opacity-0 cursor-pointer"
+            />
+          </div>
+          <ControlIcon icon={MoreVertical} className="text-white/60" />
+        </div>
+      </footer>
+    </div>
+  );
 }

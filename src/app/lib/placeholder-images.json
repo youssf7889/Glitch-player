@@ -1,0 +1,17 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "glitch-bg",
+      "description": "Retro aesthetic pattern background",
+      "imageUrl": "https://picsum.photos/seed/glitch1/1920/1080",
+      "imageHint": "retro pattern"
+    },
+    {
+      "id": "album-art-placeholder",
+      "description": "Pixel art album cover placeholder",
+      "imageUrl": "https://picsum.photos/seed/music/400/400",
+      "imageHint": "pixel art"
+    }
+  ]
+}
