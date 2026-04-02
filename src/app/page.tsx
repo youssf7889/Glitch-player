@@ -52,9 +52,11 @@ export default function GlitchPlayer() {
     setTracks(allTracks);
     setPlaylists(allPlaylists);
     
-    // Default to the first playlist if none is selected
+    // Default to the first playlist if none is selected and playlists exist
     if (!activePlaylistId && allPlaylists.length > 0) {
       setActivePlaylistId(allPlaylists[0].id);
+    } else if (allPlaylists.length === 0) {
+      setActivePlaylistId(null);
     }
   }, [activePlaylistId]);
 
@@ -82,13 +84,19 @@ export default function GlitchPlayer() {
     player.play(url);
   }, [player]);
 
-  const currentTracks = tracks.filter(t => {
-    const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          t.artist.toLowerCase().includes(searchQuery.toLowerCase());
-    if (!activePlaylistId) return matchesSearch;
+  // Updated logic: Only show tracks if a playlist is active
+  const currentTracks = useMemo(() => {
+    if (!activePlaylistId) return [];
+    
     const playlist = playlists.find(p => p.id === activePlaylistId);
-    return playlist?.trackIds.includes(t.id) && matchesSearch;
-  });
+    if (!playlist) return [];
+
+    return tracks.filter(t => {
+      const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            t.artist.toLowerCase().includes(searchQuery.toLowerCase());
+      return playlist.trackIds.includes(t.id) && matchesSearch;
+    });
+  }, [tracks, activePlaylistId, playlists, searchQuery]);
 
   const nextTrack = useCallback(() => {
     if (!currentTrackId || currentTracks.length === 0) return;
@@ -170,6 +178,10 @@ export default function GlitchPlayer() {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
     
+    // When manually uploading files, we create an "Uploaded Tracks" playlist if no playlist is active
+    let targetPlaylistId = activePlaylistId;
+    const newTrackIds: string[] = [];
+
     for (const file of files) {
       if (!file.type.startsWith('audio/')) continue;
       
@@ -185,7 +197,30 @@ export default function GlitchPlayer() {
         addedAt: Date.now()
       };
       await db.saveTrack(track);
+      newTrackIds.push(track.id);
     }
+
+    if (newTrackIds.length > 0) {
+      if (activePlaylistId) {
+        const currentPlaylist = playlists.find(p => p.id === activePlaylistId);
+        if (currentPlaylist) {
+          await db.savePlaylist({
+            ...currentPlaylist,
+            trackIds: [...new Set([...currentPlaylist.trackIds, ...newTrackIds])]
+          });
+        }
+      } else {
+        const newPlaylist: Playlist = {
+          id: crypto.randomUUID(),
+          name: "Uploaded Tracks",
+          trackIds: newTrackIds,
+          createdAt: Date.now()
+        };
+        await db.savePlaylist(newPlaylist);
+        setActivePlaylistId(newPlaylist.id);
+      }
+    }
+
     loadData();
     e.target.value = '';
   };
@@ -206,8 +241,7 @@ export default function GlitchPlayer() {
       
       if (fullPath) {
         const parts = fullPath.split('/');
-        // Use the immediate parent of the file to support multiple folder grouping
-        // This allows selecting a parent directory that contains multiple albums
+        // Use the immediate parent of the file to support grouping multiple folders
         if (parts.length > 1) {
           folderName = parts[parts.length - 2];
         } else {
@@ -246,7 +280,7 @@ export default function GlitchPlayer() {
       if (!firstNewPlaylistId) firstNewPlaylistId = newPlaylist.id;
     }
 
-    if (firstNewPlaylistId && !activePlaylistId) {
+    if (firstNewPlaylistId) {
       setActivePlaylistId(firstNewPlaylistId);
     }
 
@@ -257,7 +291,9 @@ export default function GlitchPlayer() {
   const deletePlaylist = async (id: string) => {
     if (confirm("Delete this playlist?")) {
       await db.deletePlaylist(id);
-      if (activePlaylistId === id) setActivePlaylistId(null);
+      if (activePlaylistId === id) {
+        setActivePlaylistId(null);
+      }
       loadData();
     }
   };
@@ -361,67 +397,77 @@ export default function GlitchPlayer() {
         </aside>
 
         <main className="flex-1 overflow-y-auto p-6 bg-background">
-          <div className="mb-6 flex items-end justify-between">
-            <div>
-              <h2 className="font-headline text-2xl mb-1 uppercase">
-                {activePlaylistId ? playlists.find(p => p.id === activePlaylistId)?.name : 'YOUR COLLECTION'}
-              </h2>
-              <p className="text-xl font-body text-muted-foreground">
-                {currentTracks.length} SONGS FOUND
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="grid grid-cols-12 gap-4 px-6 py-2 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase">
-              <div className="col-span-1">#</div>
-              <div className="col-span-5">Title</div>
-              <div className="col-span-3">Artist</div>
-              <div className="col-span-2">Album</div>
-              <div className="col-span-1 text-right">Dur</div>
-            </div>
-
-            {currentTracks.map((track, i) => (
-              <div 
-                key={track.id}
-                onClick={() => playTrack(track)}
-                className={cn(
-                  "grid grid-cols-12 gap-4 px-6 py-1.5 pixel-border-sm cursor-pointer items-center transition-all",
-                  currentTrackId === track.id 
-                    ? "bg-primary/10 border-primary shadow-[4px_4px_0px_0px_hsl(var(--primary))] translate-x-1" 
-                    : "bg-white hover:bg-secondary/20"
-                )}
-              >
-                <div className="col-span-1 font-body text-xl text-muted-foreground flex items-center gap-2">
-                  <span className="w-8 text-center">{(i + 1).toString().padStart(2, '0')}</span>
-                  {currentTrackId === track.id && player.isPlaying && (
-                    <div className="flex gap-0.5 items-end h-5 mb-0.5">
-                      <div className="w-1 bg-primary animate-bounce [animation-duration:0.5s]" />
-                      <div className="w-1 bg-primary animate-bounce [animation-duration:0.8s]" />
-                      <div className="w-1 bg-primary animate-bounce [animation-duration:0.6s]" />
-                    </div>
-                  )}
-                </div>
-                <div className="col-span-5 flex items-center gap-3 min-w-0">
-                  <div className={cn(
-                    "font-headline text-base truncate uppercase tracking-tight",
-                    currentTrackId === track.id ? "text-primary font-bold" : ""
-                  )}>
-                    {track.name}
-                  </div>
-                </div>
-                <div className="col-span-3 font-body text-lg truncate">
-                  {track.artist}
-                </div>
-                <div className="col-span-2 font-body text-lg truncate text-muted-foreground">
-                  {track.album}
-                </div>
-                <div className="col-span-1 font-body text-lg text-right">
-                  {formatTime(track.duration)}
+          {activePlaylistId ? (
+            <>
+              <div className="mb-6 flex items-end justify-between">
+                <div>
+                  <h2 className="font-headline text-2xl mb-1 uppercase">
+                    {playlists.find(p => p.id === activePlaylistId)?.name}
+                  </h2>
+                  <p className="text-xl font-body text-muted-foreground">
+                    {currentTracks.length} SONGS FOUND
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
+
+              <div className="space-y-2">
+                <div className="grid grid-cols-12 gap-4 px-6 py-2 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase">
+                  <div className="col-span-1">#</div>
+                  <div className="col-span-5">Title</div>
+                  <div className="col-span-3">Artist</div>
+                  <div className="col-span-2">Album</div>
+                  <div className="col-span-1 text-right">Dur</div>
+                </div>
+
+                {currentTracks.map((track, i) => (
+                  <div 
+                    key={track.id}
+                    onClick={() => playTrack(track)}
+                    className={cn(
+                      "grid grid-cols-12 gap-4 px-6 py-1.5 pixel-border-sm cursor-pointer items-center transition-all",
+                      currentTrackId === track.id 
+                        ? "bg-primary/10 border-primary shadow-[4px_4px_0px_0px_hsl(var(--primary))] translate-x-1" 
+                        : "bg-white hover:bg-secondary/20"
+                    )}
+                  >
+                    <div className="col-span-1 font-body text-xl text-muted-foreground flex items-center gap-2">
+                      <span className="w-8 text-center">{(i + 1).toString().padStart(2, '0')}</span>
+                      {currentTrackId === track.id && player.isPlaying && (
+                        <div className="flex gap-0.5 items-end h-5 mb-0.5">
+                          <div className="w-1 bg-primary animate-bounce [animation-duration:0.5s]" />
+                          <div className="w-1 bg-primary animate-bounce [animation-duration:0.8s]" />
+                          <div className="w-1 bg-primary animate-bounce [animation-duration:0.6s]" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="col-span-5 flex items-center gap-3 min-w-0">
+                      <div className={cn(
+                        "font-headline text-base truncate uppercase tracking-tight",
+                        currentTrackId === track.id ? "text-primary font-bold" : ""
+                      )}>
+                        {track.name}
+                      </div>
+                    </div>
+                    <div className="col-span-3 font-body text-lg truncate">
+                      {track.artist}
+                    </div>
+                    <div className="col-span-2 font-body text-lg truncate text-muted-foreground">
+                      {track.album}
+                    </div>
+                    <div className="col-span-1 font-body text-lg text-right">
+                      {formatTime(track.duration)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center text-center p-12 opacity-40">
+              <Music size={64} className="mb-6" />
+              <h2 className="font-headline text-2xl uppercase mb-2">No Playlist Selected</h2>
+              <p className="text-xl max-w-md">Import folders or select a playlist from the sidebar to start your session.</p>
+            </div>
+          )}
         </main>
       </div>
 
@@ -518,9 +564,6 @@ export default function GlitchPlayer() {
                 className="absolute inset-0 opacity-0 cursor-pointer"
               />
             </div>
-            <button className="p-2 text-white/70 hover:text-white transition-colors">
-              <MoreHorizontal size={20} />
-            </button>
           </div>
         </div>
       </footer>
