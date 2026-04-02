@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { 
   Upload, 
   Trash2, 
@@ -33,9 +33,9 @@ export default function GlitchPlayer() {
   const [tracks, setTracks] = useState<TrackMetadata[]>([]);
   const [currentTrackId, setCurrentTrackId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentArtUrl, setCurrentArtUrl] = useState<string | null>(null);
   
   const currentUrlRef = useRef<string | null>(null);
-  const currentArtUrlRef = useRef<string | null>(null);
   const nextTrackRef = useRef<() => void>(null);
 
   const player = useAudioPlayer({
@@ -53,19 +53,27 @@ export default function GlitchPlayer() {
     setPlaylists(allPlaylists);
   }, []);
 
+  const currentTrack = useMemo(() => 
+    tracks.find(t => t.id === currentTrackId), 
+  [tracks, currentTrackId]);
+
+  // Manage Album Art Object URL
+  useEffect(() => {
+    if (currentTrack?.albumArt) {
+      const url = URL.createObjectURL(currentTrack.albumArt);
+      setCurrentArtUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setCurrentArtUrl(null);
+    }
+  }, [currentTrack]);
+
   const playTrack = useCallback(async (track: TrackMetadata) => {
     if (currentUrlRef.current) URL.revokeObjectURL(currentUrlRef.current);
-    if (currentArtUrlRef.current) URL.revokeObjectURL(currentArtUrlRef.current);
 
     const url = URL.createObjectURL(track.blob);
     currentUrlRef.current = url;
     
-    if (track.albumArt) {
-      currentArtUrlRef.current = URL.createObjectURL(track.albumArt);
-    } else {
-      currentArtUrlRef.current = null;
-    }
-
     setCurrentTrackId(track.id);
     player.play(url);
   }, [player]);
@@ -132,7 +140,8 @@ export default function GlitchPlayer() {
       
       let albumArt: Blob | null = null;
       if (common.picture && common.picture.length > 0) {
-        albumArt = new Blob([common.picture[0].data], { type: common.picture[0].format });
+        const pic = common.picture[0];
+        albumArt = new Blob([pic.data], { type: pic.format });
       }
 
       return {
@@ -143,7 +152,6 @@ export default function GlitchPlayer() {
         albumArt
       };
     } catch (e) {
-      console.error("Metadata extraction failed", e);
       return {
         name: file.name.replace(/\.[^/.]+$/, ""),
         artist: "Unknown Artist",
@@ -175,6 +183,7 @@ export default function GlitchPlayer() {
       await db.saveTrack(track);
     }
     loadData();
+    e.target.value = '';
   };
 
   const handleFolderUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -228,8 +237,6 @@ export default function GlitchPlayer() {
       loadData();
     }
   };
-
-  const currentTrack = tracks.find(t => t.id === currentTrackId);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -380,7 +387,7 @@ export default function GlitchPlayer() {
                 <div className="col-span-5 flex items-center gap-3 min-w-0">
                   <div className="w-10 h-10 bg-secondary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden">
                     {track.albumArt ? (
-                      <img src={URL.createObjectURL(track.albumArt)} alt="" className="w-full h-full object-cover" />
+                      <ArtworkImage blob={track.albumArt} />
                     ) : (
                       <Music size={16} className="text-primary" />
                     )}
@@ -409,10 +416,10 @@ export default function GlitchPlayer() {
 
       <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1fr_2fr_1fr] items-center">
         {/* Left Column: Track Info */}
-        <div className="flex items-center gap-4 justify-start min-w-0 overflow-hidden">
+        <div className="flex items-center gap-4 justify-start min-w-0 overflow-hidden pr-4">
           <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden">
-            {currentTrack?.albumArt ? (
-              <img src={URL.createObjectURL(currentTrack.albumArt)} alt="" className="w-full h-full object-cover" />
+            {currentArtUrl ? (
+              <img src={currentArtUrl} alt="" className="w-full h-full object-cover" />
             ) : (
               <Music size={24} />
             )}
@@ -480,7 +487,7 @@ export default function GlitchPlayer() {
         </div>
 
         {/* Right Column: Volume and Menu icons */}
-        <div className="flex items-center justify-end gap-6 min-w-0">
+        <div className="flex items-center justify-end gap-6 min-w-0 pl-4">
           <div className="flex items-center gap-3 w-48">
             <ControlIcon 
               icon={player.isMuted ? VolumeX : Volume2} 
@@ -508,4 +515,18 @@ export default function GlitchPlayer() {
       </footer>
     </div>
   );
+}
+
+// Helper component to manage URL life cycle for list items
+function ArtworkImage({ blob }: { blob: Blob }) {
+  const [url, setUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const u = URL.createObjectURL(blob);
+    setUrl(u);
+    return () => URL.revokeObjectURL(u);
+  }, [blob]);
+
+  if (!url) return <Music size={16} className="text-primary" />;
+  return <img src={url} alt="" className="w-full h-full object-cover" />;
 }
