@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -386,13 +385,6 @@ export default function GlitchPlayer() {
                   )}
                 </div>
                 <div className="col-span-5 flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 bg-secondary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden">
-                    {track.albumArt ? (
-                      <ArtworkImage blob={track.albumArt} />
-                    ) : (
-                      <Music size={16} className="text-primary" />
-                    )}
-                  </div>
                   <div className={cn(
                     "font-headline text-base truncate uppercase tracking-tight",
                     currentTrackId === track.id ? "text-primary font-bold" : ""
@@ -516,18 +508,4 @@ export default function GlitchPlayer() {
       </footer>
     </div>
   );
-}
-
-// Helper component to manage URL life cycle for list items
-function ArtworkImage({ blob }: { blob: Blob }) {
-  const [url, setUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    const u = URL.createObjectURL(blob);
-    setUrl(u);
-    return () => URL.revokeObjectURL(u);
-  }, [blob]);
-
-  if (!url) return <Music size={16} className="text-primary" />;
-  return <img src={url} alt="" className="w-full h-full object-cover" />;
 }
