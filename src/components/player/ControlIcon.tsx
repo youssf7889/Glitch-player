@@ -1,4 +1,3 @@
-
 import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -15,7 +14,7 @@ export function ControlIcon({ icon: Icon, onClick, active, className, size = 20 
     <button
       onClick={onClick}
       className={cn(
-        "p-2 transition-all active:translate-y-0.5 glitch-hover",
+        "p-2 transition-all active:translate-y-0.5",
         active ? "text-primary bg-accent/10" : "text-foreground hover:text-primary",
         className
       )}
