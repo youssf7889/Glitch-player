@@ -16,6 +16,7 @@ import {
   VolumeX,
   Music,
   FolderOpen,
+  FolderPlus,
   Search,
   Settings,
   MoreVertical
@@ -59,13 +60,58 @@ export default function GlitchPlayer() {
         name: file.name.replace(/\.[^/.]+$/, ""),
         artist: "Unknown Artist",
         album: "Unknown Album",
-        duration: 0, // Will be updated on load
+        duration: 0,
         blob: file,
         addedAt: Date.now()
       };
       await db.saveTrack(track);
     }
     loadData();
+  };
+
+  const handleFolderUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    const fileList = Array.from(files);
+    const audioFiles = fileList.filter(f => f.type.startsWith('audio/'));
+    
+    if (audioFiles.length === 0) return;
+
+    // Extract folder name from the first file's relative path
+    // Example webkitRelativePath: "MyAlbum/song1.mp3"
+    const firstPath = (audioFiles[0] as any).webkitRelativePath;
+    const folderName = firstPath ? firstPath.split('/')[0] : "New Folder Playlist";
+
+    const newTrackIds: string[] = [];
+
+    for (const file of audioFiles) {
+      const track: TrackMetadata = {
+        id: crypto.randomUUID(),
+        name: file.name.replace(/\.[^/.]+$/, ""),
+        artist: "Unknown Artist",
+        album: "Unknown Album",
+        duration: 0,
+        blob: file,
+        addedAt: Date.now()
+      };
+      await db.saveTrack(track);
+      newTrackIds.push(track.id);
+    }
+
+    const newPlaylist: Playlist = {
+      id: crypto.randomUUID(),
+      name: folderName,
+      trackIds: newTrackIds,
+      createdAt: Date.now()
+    };
+
+    await db.savePlaylist(newPlaylist);
+    await loadData();
+    setActivePlaylistId(newPlaylist.id);
+    
+    // Clear input
+    e.target.value = '';
   };
 
   const createPlaylist = async () => {
@@ -169,9 +215,21 @@ export default function GlitchPlayer() {
           <div className="p-4 space-y-4">
             <div className="flex items-center justify-between mb-2">
               <span className="font-headline text-[10px] text-muted-foreground uppercase tracking-widest">Library</span>
-              <button onClick={createPlaylist} className="p-1 hover:text-primary transition-colors">
-                <Plus size={20} strokeWidth={3} />
-              </button>
+              <div className="flex gap-2">
+                <button onClick={createPlaylist} title="Create Playlist" className="p-1 hover:text-primary transition-colors">
+                  <Plus size={20} strokeWidth={3} />
+                </button>
+                <label title="Upload Folder as Playlist" className="p-1 hover:text-primary transition-colors cursor-pointer">
+                  <FolderPlus size={20} strokeWidth={3} />
+                  <input 
+                    type="file" 
+                    className="hidden" 
+                    onChange={handleFolderUpload}
+                    {...{ webkitdirectory: "", directory: "" } as any}
+                    multiple 
+                  />
+                </label>
+              </div>
             </div>
             
             <nav className="space-y-2">
