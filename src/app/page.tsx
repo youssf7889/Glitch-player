@@ -15,7 +15,8 @@ import {
   Music,
   FolderOpen,
   FolderPlus,
-  Search
+  Search,
+  ChevronLeft
 } from 'lucide-react';
 import * as mm from 'music-metadata-browser';
 import { db, TrackMetadata, Playlist } from '@/lib/db';
@@ -407,50 +408,53 @@ export default function GlitchPlayer() {
               <div className="space-y-1.5">
                 <div className="grid grid-cols-12 gap-4 px-6 py-1 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase">
                   <div className="col-span-1">#</div>
-                  <div className="col-span-5">Title</div>
+                  <div className="col-span-7">Title</div>
                   <div className="col-span-3">Artist</div>
-                  <div className="col-span-2">Album</div>
-                  <div className="col-span-1 text-right">Dur</div>
+                  <div className="col-span-1 text-right pr-4">Dur</div>
                 </div>
 
                 {currentTracks.map((track, i) => (
-                  <div 
-                    key={track.id}
-                    onClick={() => playTrack(track)}
-                    className={cn(
-                      "grid grid-cols-12 gap-4 px-6 py-0.5 pixel-border-sm cursor-pointer items-center transition-all",
-                      currentTrackId === track.id 
-                        ? "bg-primary/10 border-primary shadow-[4px_4px_0px_0px_hsl(var(--primary))] translate-x-1" 
-                        : "bg-white hover:bg-secondary/20"
-                    )}
-                  >
-                    <div className="col-span-1 font-body text-xl text-muted-foreground flex items-center gap-2">
-                      <span className="w-8 text-center">{(i + 1).toString().padStart(2, '0')}</span>
-                      {currentTrackId === track.id && player.isPlaying && (
-                        <div className="flex gap-0.5 items-end h-4 mb-0.5">
-                          <div className="w-1 bg-primary animate-bounce [animation-duration:0.5s]" />
-                          <div className="w-1 bg-primary animate-bounce [animation-duration:0.8s]" />
-                          <div className="w-1 bg-primary animate-bounce [animation-duration:0.6s]" />
-                        </div>
+                  <div key={track.id} className="relative flex items-center">
+                    <div 
+                      onClick={() => playTrack(track)}
+                      className={cn(
+                        "grid grid-cols-12 gap-4 px-6 py-0.5 pixel-border-sm cursor-pointer items-center transition-all w-full",
+                        currentTrackId === track.id 
+                          ? "bg-primary/10 border-primary shadow-[4px_4px_0px_0px_hsl(var(--primary))] translate-x-1" 
+                          : "bg-white hover:bg-secondary/20"
                       )}
-                    </div>
-                    <div className="col-span-5 flex items-center gap-3 min-w-0">
-                      <div className={cn(
-                        "font-headline text-lg font-bold truncate uppercase tracking-tight",
-                        currentTrackId === track.id ? "text-primary" : ""
-                      )}>
-                        {track.name}
+                    >
+                      <div className="col-span-1 font-body text-xl text-muted-foreground flex items-center gap-2">
+                        <span className="w-8 text-center">{(i + 1).toString().padStart(2, '0')}</span>
+                        {currentTrackId === track.id && player.isPlaying && (
+                          <div className="flex gap-0.5 items-end h-4 mb-0.5">
+                            <div className="w-1 bg-primary animate-bounce [animation-duration:0.5s]" />
+                            <div className="w-1 bg-primary animate-bounce [animation-duration:0.8s]" />
+                            <div className="w-1 bg-primary animate-bounce [animation-duration:0.6s]" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="col-span-7 flex items-center gap-3 min-w-0">
+                        <div className={cn(
+                          "font-headline text-lg font-bold truncate uppercase tracking-tight",
+                          currentTrackId === track.id ? "text-primary" : ""
+                        )}>
+                          {track.name}
+                        </div>
+                      </div>
+                      <div className="col-span-3 font-body text-lg truncate opacity-70">
+                        {track.artist}
+                      </div>
+                      <div className="col-span-1 font-body text-lg text-right pr-4">
+                        {formatTime(track.duration)}
                       </div>
                     </div>
-                    <div className="col-span-3 font-body text-lg truncate opacity-70">
-                      {track.artist}
-                    </div>
-                    <div className="col-span-2 font-body text-lg truncate text-muted-foreground opacity-70">
-                      {track.album}
-                    </div>
-                    <div className="col-span-1 font-body text-lg text-right">
-                      {formatTime(track.duration)}
-                    </div>
+                    {currentTrackId === track.id && (
+                      <div className="absolute -right-4 flex items-center text-primary">
+                        <div className="w-2 h-2 border-l-2 border-t-2 border-primary rotate-[135deg]" />
+                        <div className="w-1.5 h-3 bg-primary -ml-[2px]" />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
