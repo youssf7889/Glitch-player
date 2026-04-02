@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -210,7 +209,7 @@ export default function GlitchPlayer() {
           <div className="w-8 h-8 bg-primary pixel-border-sm flex items-center justify-center text-white">
             <Music size={18} strokeWidth={3} />
           </div>
-          <h1 className="font-headline text-lg tracking-tighter">グリッチプレイヤー</h1>
+          <h1 className="font-headline text-lg tracking-tighter uppercase">グリッチプレイヤー</h1>
         </div>
         
         <div className="flex items-center gap-4">
@@ -218,14 +217,14 @@ export default function GlitchPlayer() {
             <Search className="absolute left-3 text-muted-foreground" size={16} />
             <Input 
               placeholder="SEARCH TRACKS..." 
-              className="pl-10 h-10 w-64 pixel-border-sm bg-background font-body text-lg focus:ring-0"
+              className="pl-10 h-10 w-64 pixel-border-sm bg-background font-body text-xl focus:ring-0"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <label className="cursor-pointer h-10 px-4 flex items-center gap-2 bg-primary text-white pixel-border-sm hover:translate-y-0.5 transition-all">
             <Upload size={16} />
-            <span className="text-sm font-headline">UPLOAD</span>
+            <span className="text-lg font-headline">UPLOAD</span>
             <input type="file" multiple className="hidden" onChange={handleFileUpload} accept="audio/*" />
           </label>
         </div>
@@ -250,15 +249,15 @@ export default function GlitchPlayer() {
               </div>
             </div>
             
-            <nav className="space-y-3">
+            <nav className="space-y-4">
               <button 
                 onClick={() => setActivePlaylistId('all')}
                 className={cn(
-                  "w-full flex items-center gap-4 px-4 py-4 text-left font-headline text-sm transition-all pixel-border-sm",
+                  "w-full flex items-center gap-4 px-5 py-5 text-left font-headline text-base transition-all pixel-border-sm",
                   activePlaylistId === 'all' ? "bg-primary text-white" : "bg-background hover:bg-secondary/50"
                 )}
               >
-                <Music size={18} />
+                <Music size={20} />
                 ALL TRACKS
               </button>
 
@@ -267,18 +266,18 @@ export default function GlitchPlayer() {
                   <button 
                     onClick={() => setActivePlaylistId(playlist.id)}
                     className={cn(
-                      "w-full flex items-center gap-4 px-4 py-4 text-left font-headline text-sm transition-all pixel-border-sm",
+                      "w-full flex items-center gap-4 px-5 py-5 text-left font-headline text-base transition-all pixel-border-sm",
                       activePlaylistId === playlist.id ? "bg-primary text-white" : "bg-background hover:bg-secondary/50"
                     )}
                   >
-                    <FolderOpen size={18} />
+                    <FolderOpen size={20} />
                     {playlist.name.toUpperCase()}
                   </button>
                   <button 
                     onClick={() => deletePlaylist(playlist.id)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-destructive hover:scale-110 transition-all p-1"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-destructive hover:scale-110 transition-all p-1"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={20} />
                   </button>
                 </div>
               ))}
@@ -298,8 +297,8 @@ export default function GlitchPlayer() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <div className="grid grid-cols-12 gap-4 px-4 py-2 text-sm font-headline text-muted-foreground border-b-2 border-muted uppercase">
+          <div className="space-y-3">
+            <div className="grid grid-cols-12 gap-4 px-6 py-3 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase">
               <div className="col-span-1">#</div>
               <div className="col-span-5">Title</div>
               <div className="col-span-3">Artist</div>
@@ -312,31 +311,36 @@ export default function GlitchPlayer() {
                 key={track.id}
                 onClick={() => playTrack(track)}
                 className={cn(
-                  "grid grid-cols-12 gap-4 px-4 py-3 pixel-border-sm cursor-pointer items-center transition-all hover:bg-secondary/20",
-                  currentTrackId === track.id ? "bg-primary/5 border-primary shadow-[2px_2px_0px_0px_hsl(var(--primary))]" : "bg-white"
+                  "grid grid-cols-12 gap-4 px-6 py-4 pixel-border-sm cursor-pointer items-center transition-all",
+                  currentTrackId === track.id 
+                    ? "bg-primary/10 border-primary shadow-[6px_6px_0px_0px_hsl(var(--primary))] translate-x-1" 
+                    : "bg-white hover:bg-secondary/20"
                 )}
               >
-                <div className="col-span-1 font-body text-xl text-muted-foreground">
+                <div className="col-span-1 font-body text-2xl text-muted-foreground">
                   {currentTrackId === track.id && player.isPlaying ? (
-                    <div className="flex gap-0.5 items-end h-4">
-                      <div className="w-1 bg-primary animate-bounce [animation-duration:0.5s]" />
-                      <div className="w-1 bg-primary animate-bounce [animation-duration:0.8s]" />
-                      <div className="w-1 bg-primary animate-bounce [animation-duration:0.6s]" />
+                    <div className="flex gap-1 items-end h-5">
+                      <div className="w-1.5 bg-primary animate-bounce [animation-duration:0.5s]" />
+                      <div className="w-1.5 bg-primary animate-bounce [animation-duration:0.8s]" />
+                      <div className="w-1.5 bg-primary animate-bounce [animation-duration:0.6s]" />
                     </div>
                   ) : (
                     (i + 1).toString().padStart(2, '0')
                   )}
                 </div>
-                <div className="col-span-5 font-headline text-sm truncate">
+                <div className={cn(
+                  "col-span-5 font-headline text-base truncate",
+                  currentTrackId === track.id ? "text-primary" : ""
+                )}>
                   {track.name}
                 </div>
-                <div className="col-span-3 font-body text-xl truncate">
+                <div className="col-span-3 font-body text-2xl truncate">
                   {track.artist}
                 </div>
-                <div className="col-span-2 font-body text-xl truncate text-muted-foreground">
+                <div className="col-span-2 font-body text-2xl truncate text-muted-foreground">
                   {track.album}
                 </div>
-                <div className="col-span-1 font-body text-xl text-right">
+                <div className="col-span-1 font-body text-2xl text-right">
                   --:--
                 </div>
               </div>
@@ -354,7 +358,7 @@ export default function GlitchPlayer() {
             <div className="font-headline text-xs truncate mb-1 uppercase tracking-tight">
               {currentTrack?.name || 'NO TRACK SELECTED'}
             </div>
-            <div className="font-body text-lg text-secondary/60 truncate uppercase">
+            <div className="font-body text-2xl text-secondary/60 truncate uppercase">
               {currentTrack?.artist || 'SYSTEM IDLE'}
             </div>
           </div>
@@ -375,9 +379,9 @@ export default function GlitchPlayer() {
             />
             <button 
               onClick={player.togglePlay}
-              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all"
+              className="w-14 h-14 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all"
             >
-              {player.isPlaying ? <Pause fill="white" size={24} /> : <Play fill="white" size={24} />}
+              {player.isPlaying ? <Pause fill="white" size={28} /> : <Play fill="white" size={28} />}
             </button>
             <ControlIcon 
               icon={SkipForward} 
