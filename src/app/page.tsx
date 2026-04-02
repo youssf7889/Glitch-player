@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -36,7 +35,7 @@ export default function GlitchPlayer() {
   const currentUrlRef = useRef<string | null>(null);
   const nextTrackRef = useRef<() => void>(null);
 
-  // Initialize player first, but use a ref for the onEnded callback to avoid circular dependency
+  // Initialize player first
   const player = useAudioPlayer({
     onEnded: () => {
       if (nextTrackRef.current) {
@@ -89,7 +88,6 @@ export default function GlitchPlayer() {
 
     if (player.shuffle) {
       nextIdx = Math.floor(Math.random() * currentTracks.length);
-      // Try not to play the same track again if possible
       if (nextIdx === idx && currentTracks.length > 1) {
         nextIdx = (nextIdx + 1) % currentTracks.length;
       }
@@ -99,7 +97,6 @@ export default function GlitchPlayer() {
         if (player.repeat === 'all') {
           nextIdx = 0;
         } else {
-          // End of list and no repeat
           return;
         }
       }
@@ -109,7 +106,6 @@ export default function GlitchPlayer() {
     if (track) playTrack(track);
   }, [currentTrackId, currentTracks, player.shuffle, player.repeat, playTrack]);
 
-  // Sync the ref for the onEnded callback
   useEffect(() => {
     nextTrackRef.current = nextTrack;
   }, [nextTrack]);
@@ -194,7 +190,6 @@ export default function GlitchPlayer() {
 
   const currentTrack = tracks.find(t => t.id === currentTrackId);
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement) return;
@@ -211,7 +206,6 @@ export default function GlitchPlayer() {
 
   return (
     <div className="h-screen w-full flex flex-col overflow-hidden bg-background text-foreground font-body select-none">
-      {/* Header */}
       <header className="h-16 flex items-center justify-between px-6 border-b-4 border-accent bg-secondary/30">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-primary pixel-border-sm flex items-center justify-center text-white">
@@ -239,7 +233,6 @@ export default function GlitchPlayer() {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar - Playlists */}
         <aside className="w-72 border-r-4 border-accent bg-secondary/10 overflow-y-auto">
           <div className="p-4 space-y-4">
             <div className="flex items-center justify-between mb-2">
@@ -294,7 +287,6 @@ export default function GlitchPlayer() {
           </div>
         </aside>
 
-        {/* Main Track List */}
         <main className="flex-1 overflow-y-auto p-6 bg-background">
           <div className="mb-6 flex items-end justify-between">
             <div>
@@ -354,9 +346,7 @@ export default function GlitchPlayer() {
         </main>
       </div>
 
-      {/* Bottom Player Bar */}
       <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 flex items-center gap-8">
-        {/* Track Info */}
         <div className="w-80 flex items-center gap-4">
           <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center">
             <Music size={32} />
@@ -371,14 +361,13 @@ export default function GlitchPlayer() {
           </div>
         </div>
 
-        {/* Playback Controls */}
         <div className="flex-1 max-w-2xl flex flex-col gap-2">
           <div className="flex items-center justify-center gap-6">
             <ControlIcon 
               icon={Shuffle} 
               active={player.shuffle} 
               onClick={() => player.setShuffle(!player.shuffle)} 
-              className="text-white/60 hover:text-white"
+              className="text-white"
             />
             <ControlIcon 
               icon={SkipBack} 
@@ -405,10 +394,10 @@ export default function GlitchPlayer() {
                   const nextIdx = (modes.indexOf(player.repeat) + 1) % modes.length;
                   player.setRepeat(modes[nextIdx]);
                 }} 
-                className="text-white/60 hover:text-white"
+                className="text-white"
               />
               {player.repeat === 'one' && (
-                <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-primary px-1 rounded-sm">1</span>
+                <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-primary px-1 border border-white">1</span>
               )}
             </div>
           </div>
@@ -419,7 +408,6 @@ export default function GlitchPlayer() {
           />
         </div>
 
-        {/* Volume & Extras */}
         <div className="w-64 flex items-center justify-end gap-4">
           <ControlIcon 
             icon={player.isMuted ? VolumeX : Volume2} 
@@ -441,7 +429,7 @@ export default function GlitchPlayer() {
               className="absolute inset-0 opacity-0 cursor-pointer"
             />
           </div>
-          <ControlIcon icon={MoreVertical} className="text-white/60" />
+          <ControlIcon icon={MoreVertical} className="text-white" />
         </div>
       </footer>
     </div>
