@@ -16,8 +16,7 @@ import {
   Music,
   FolderOpen,
   FolderPlus,
-  Search,
-  MoreVertical
+  Search
 } from 'lucide-react';
 import { db, TrackMetadata, Playlist } from '@/lib/db';
 import { useAudioPlayer } from '@/hooks/use-audio-player';
@@ -330,7 +329,7 @@ export default function GlitchPlayer() {
                 </div>
                 <div className={cn(
                   "col-span-5 font-headline text-base truncate uppercase tracking-tight",
-                  currentTrackId === track.id ? "text-primary" : ""
+                  currentTrackId === track.id ? "text-primary font-bold" : ""
                 )}>
                   {track.name}
                 </div>
@@ -351,7 +350,7 @@ export default function GlitchPlayer() {
 
       <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 flex items-center justify-between gap-4">
         {/* Track Info */}
-        <div className="w-48 flex items-center gap-3 flex-shrink min-w-0">
+        <div className="w-48 flex items-center gap-3 flex-shrink-0 min-w-0">
           <div className="w-10 h-10 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center">
             <Music size={20} />
           </div>
@@ -366,7 +365,7 @@ export default function GlitchPlayer() {
         </div>
 
         {/* Playback Controls & Wide Progress Bar */}
-        <div className="flex-[3] min-w-[60vw] flex flex-col gap-1 items-center px-4">
+        <div className="flex-grow min-w-[60vw] flex flex-col gap-1 items-center px-4">
           <div className="flex items-center justify-center gap-3 mb-1">
             <ControlIcon 
               icon={Shuffle} 
@@ -415,15 +414,15 @@ export default function GlitchPlayer() {
           </div>
         </div>
 
-        {/* Volume & More */}
-        <div className="w-48 flex items-center justify-end gap-3 flex-shrink min-w-0">
-          <div className="flex items-center gap-2 flex-1 justify-end min-w-0">
+        {/* Volume - Wider as requested */}
+        <div className="w-64 flex items-center justify-end gap-3 flex-shrink-0 min-w-0">
+          <div className="flex items-center gap-4 flex-1 justify-end min-w-0">
             <ControlIcon 
               icon={player.isMuted ? VolumeX : Volume2} 
               size={18}
               onClick={player.toggleMute} 
             />
-            <div className="w-16 h-1.5 bg-white/10 pixel-border-sm relative cursor-pointer group">
+            <div className="w-48 h-2 bg-white/10 pixel-border-sm relative cursor-pointer group">
               <div 
                 className="absolute top-0 left-0 h-full bg-primary"
                 style={{ width: `${player.volume * 100}%` }}
