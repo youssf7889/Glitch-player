@@ -57,7 +57,7 @@ export default function GlitchPlayer() {
     tracks.find(t => t.id === currentTrackId), 
   [tracks, currentTrackId]);
 
-  // Manage Album Art Object URL
+  // Manage Album Art Object URL for the footer
   useEffect(() => {
     if (currentTrack?.albumArt) {
       const url = URL.createObjectURL(currentTrack.albumArt);
@@ -152,6 +152,7 @@ export default function GlitchPlayer() {
         albumArt
       };
     } catch (e) {
+      console.error("Metadata extraction failed", e);
       return {
         name: file.name.replace(/\.[^/.]+$/, ""),
         artist: "Unknown Artist",
