@@ -52,7 +52,6 @@ export default function GlitchPlayer() {
     setTracks(allTracks);
     setPlaylists(allPlaylists);
     
-    // Default to the first playlist if none is selected and playlists exist
     if (!activePlaylistId && allPlaylists.length > 0) {
       setActivePlaylistId(allPlaylists[0].id);
     } else if (allPlaylists.length === 0) {
@@ -84,7 +83,6 @@ export default function GlitchPlayer() {
     player.play(url);
   }, [player]);
 
-  // Updated logic: Only show tracks if a playlist is active
   const currentTracks = useMemo(() => {
     if (!activePlaylistId) return [];
     
@@ -178,7 +176,6 @@ export default function GlitchPlayer() {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
     
-    // When manually uploading files, we create an "Uploaded Tracks" playlist if no playlist is active
     let targetPlaylistId = activePlaylistId;
     const newTrackIds: string[] = [];
 
@@ -241,7 +238,6 @@ export default function GlitchPlayer() {
       
       if (fullPath) {
         const parts = fullPath.split('/');
-        // Use the immediate parent of the file to support grouping multiple folders
         if (parts.length > 1) {
           folderName = parts[parts.length - 2];
         } else {
@@ -372,12 +368,12 @@ export default function GlitchPlayer() {
                   <button 
                     onClick={() => setActivePlaylistId(playlist.id)}
                     className={cn(
-                      "w-full flex items-center gap-4 px-5 py-5 text-left font-headline text-base transition-all pixel-border-sm",
+                      "w-full flex items-center gap-4 px-5 py-5 text-left font-headline text-base transition-all pixel-border-sm min-w-0 pr-12",
                       activePlaylistId === playlist.id ? "bg-primary text-white" : "bg-background hover:bg-secondary/50"
                     )}
                   >
-                    <FolderOpen size={20} />
-                    {playlist.name.toUpperCase()}
+                    <FolderOpen size={20} className="shrink-0" />
+                    <span className="truncate flex-1 uppercase">{playlist.name}</span>
                   </button>
                   <button 
                     onClick={() => deletePlaylist(playlist.id)}
@@ -401,7 +397,7 @@ export default function GlitchPlayer() {
             <>
               <div className="mb-6 flex items-end justify-between">
                 <div>
-                  <h2 className="font-headline text-2xl mb-1 uppercase">
+                  <h2 className="font-headline text-2xl mb-1 uppercase truncate max-w-xl">
                     {playlists.find(p => p.id === activePlaylistId)?.name}
                   </h2>
                   <p className="text-xl font-body text-muted-foreground">
@@ -472,7 +468,6 @@ export default function GlitchPlayer() {
       </div>
 
       <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1fr_2fr_1fr] items-center">
-        {/* Left Column: Song Info */}
         <div className="flex items-center gap-4 justify-start min-w-0 overflow-hidden pr-4">
           <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden">
             {currentArtUrl ? (
@@ -491,7 +486,6 @@ export default function GlitchPlayer() {
           </div>
         </div>
 
-        {/* Center Column: Controls & Progress */}
         <div className="flex flex-col items-center justify-center w-full px-4 gap-2">
           <div className="flex items-center justify-center gap-4">
             <ControlIcon 
@@ -541,7 +535,6 @@ export default function GlitchPlayer() {
           </div>
         </div>
 
-        {/* Right Column: Volume & Actions */}
         <div className="flex items-center justify-end gap-6 min-w-0 pl-4">
           <div className="flex items-center gap-3 w-64">
             <ControlIcon 
