@@ -3,7 +3,11 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-export function useAudioPlayer() {
+interface AudioPlayerOptions {
+  onEnded?: () => void;
+}
+
+export function useAudioPlayer(options?: AudioPlayerOptions) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -13,6 +17,11 @@ export function useAudioPlayer() {
   const [repeat, setRepeat] = useState<'none' | 'one' | 'all'>('none');
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const onEndedRef = useRef(options?.onEnded);
+
+  useEffect(() => {
+    onEndedRef.current = options?.onEnded;
+  }, [options?.onEnded]);
 
   useEffect(() => {
     audioRef.current = new Audio();
@@ -22,7 +31,9 @@ export function useAudioPlayer() {
     const onLoadedMetadata = () => setDuration(audio.duration);
     const onEnded = () => {
       setIsPlaying(false);
-      // Logic for next track will be handled by the parent component
+      if (onEndedRef.current) {
+        onEndedRef.current();
+      }
     };
 
     audio.addEventListener('timeupdate', onTimeUpdate);

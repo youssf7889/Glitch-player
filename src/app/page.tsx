@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Upload, 
   Trash2, 
@@ -32,7 +33,17 @@ export default function GlitchPlayer() {
   const [currentTrackId, setCurrentTrackId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   
-  const player = useAudioPlayer();
+  const currentUrlRef = useRef<string | null>(null);
+  const nextTrackRef = useRef<() => void>(null);
+
+  // Initialize player first, but use a ref for the onEnded callback to avoid circular dependency
+  const player = useAudioPlayer({
+    onEnded: () => {
+      if (nextTrackRef.current) {
+        nextTrackRef.current();
+      }
+    }
+  });
 
   const loadData = useCallback(async () => {
     const allTracks = await db.getAllTracks();
@@ -44,6 +55,71 @@ export default function GlitchPlayer() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  const currentTracks = tracks.filter(t => {
+    const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          t.artist.toLowerCase().includes(searchQuery.toLowerCase());
+    if (activePlaylistId === 'all') return matchesSearch;
+    const playlist = playlists.find(p => p.id === activePlaylistId);
+    return playlist?.trackIds.includes(t.id) && matchesSearch;
+  });
+
+  const playTrack = useCallback(async (track: TrackMetadata) => {
+    if (currentUrlRef.current) {
+      URL.revokeObjectURL(currentUrlRef.current);
+    }
+    const url = URL.createObjectURL(track.blob);
+    currentUrlRef.current = url;
+    setCurrentTrackId(track.id);
+    player.play(url);
+  }, [player]);
+
+  const nextTrack = useCallback(() => {
+    if (!currentTrackId || currentTracks.length === 0) return;
+    
+    // Handle repeat one
+    if (player.repeat === 'one') {
+      const track = currentTracks.find(t => t.id === currentTrackId);
+      if (track) playTrack(track);
+      return;
+    }
+
+    const idx = currentTracks.findIndex(t => t.id === currentTrackId);
+    let nextIdx;
+
+    if (player.shuffle) {
+      nextIdx = Math.floor(Math.random() * currentTracks.length);
+      // Try not to play the same track again if possible
+      if (nextIdx === idx && currentTracks.length > 1) {
+        nextIdx = (nextIdx + 1) % currentTracks.length;
+      }
+    } else {
+      nextIdx = idx + 1;
+      if (nextIdx >= currentTracks.length) {
+        if (player.repeat === 'all') {
+          nextIdx = 0;
+        } else {
+          // End of list and no repeat
+          return;
+        }
+      }
+    }
+
+    const track = currentTracks[nextIdx];
+    if (track) playTrack(track);
+  }, [currentTrackId, currentTracks, player.shuffle, player.repeat, playTrack]);
+
+  // Sync the ref for the onEnded callback
+  useEffect(() => {
+    nextTrackRef.current = nextTrack;
+  }, [nextTrack]);
+
+  const prevTrack = useCallback(() => {
+    if (!currentTrackId || currentTracks.length === 0) return;
+    const idx = currentTracks.findIndex(t => t.id === currentTrackId);
+    const prevIdx = (idx - 1 + currentTracks.length) % currentTracks.length;
+    playTrack(currentTracks[prevIdx]);
+  }, [currentTrackId, currentTracks, playTrack]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -75,7 +151,6 @@ export default function GlitchPlayer() {
     
     if (audioFiles.length === 0) return;
 
-    // Extract folder name from the first file's relative path
     const firstPath = (audioFiles[0] as any).webkitRelativePath;
     const folderName = firstPath ? firstPath.split('/')[0] : "New Folder Playlist";
 
@@ -106,7 +181,6 @@ export default function GlitchPlayer() {
     await loadData();
     setActivePlaylistId(newPlaylist.id);
     
-    // Clear input
     e.target.value = '';
   };
 
@@ -118,35 +192,7 @@ export default function GlitchPlayer() {
     }
   };
 
-  const currentTracks = tracks.filter(t => {
-    const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          t.artist.toLowerCase().includes(searchQuery.toLowerCase());
-    if (activePlaylistId === 'all') return matchesSearch;
-    const playlist = playlists.find(p => p.id === activePlaylistId);
-    return playlist?.trackIds.includes(t.id) && matchesSearch;
-  });
-
   const currentTrack = tracks.find(t => t.id === currentTrackId);
-
-  const playTrack = async (track: TrackMetadata) => {
-    const url = URL.createObjectURL(track.blob);
-    setCurrentTrackId(track.id);
-    player.play(url);
-  };
-
-  const nextTrack = () => {
-    if (!currentTrackId || currentTracks.length === 0) return;
-    const idx = currentTracks.findIndex(t => t.id === currentTrackId);
-    const nextIdx = (idx + 1) % currentTracks.length;
-    playTrack(currentTracks[nextIdx]);
-  };
-
-  const prevTrack = () => {
-    if (!currentTrackId || currentTracks.length === 0) return;
-    const idx = currentTracks.findIndex(t => t.id === currentTrackId);
-    const prevIdx = (idx - 1 + currentTracks.length) % currentTracks.length;
-    playTrack(currentTracks[prevIdx]);
-  };
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -161,7 +207,7 @@ export default function GlitchPlayer() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [player, currentTracks, currentTrackId]);
+  }, [player, nextTrack, prevTrack]);
 
   return (
     <div className="h-screen w-full flex flex-col overflow-hidden bg-background text-foreground font-body select-none">
@@ -350,12 +396,21 @@ export default function GlitchPlayer() {
               onClick={nextTrack} 
               className="text-white"
             />
-            <ControlIcon 
-              icon={Repeat} 
-              active={player.repeat !== 'none'} 
-              onClick={() => player.setRepeat(player.repeat === 'none' ? 'all' : 'none')} 
-              className="text-white/60 hover:text-white"
-            />
+            <div className="relative">
+              <ControlIcon 
+                icon={Repeat} 
+                active={player.repeat !== 'none'} 
+                onClick={() => {
+                  const modes: ('none' | 'all' | 'one')[] = ['none', 'all', 'one'];
+                  const nextIdx = (modes.indexOf(player.repeat) + 1) % modes.length;
+                  player.setRepeat(modes[nextIdx]);
+                }} 
+                className="text-white/60 hover:text-white"
+              />
+              {player.repeat === 'one' && (
+                <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-primary px-1 rounded-sm">1</span>
+              )}
+            </div>
           </div>
           <ProgressBar 
             current={player.currentTime} 
