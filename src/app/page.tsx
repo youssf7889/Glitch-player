@@ -27,7 +27,6 @@ import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 
 export default function GlitchPlayer() {
-  // 1. All hooks at the top
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [activePlaylistId, setActivePlaylistId] = useState<string>('all');
   const [tracks, setTracks] = useState<TrackMetadata[]>([]);
@@ -37,33 +36,12 @@ export default function GlitchPlayer() {
   const currentUrlRef = useRef<string | null>(null);
   const nextTrackRef = useRef<() => void>(null);
 
-  // Initialize player
-  const player = useAudioPlayer({
-    onEnded: () => {
-      if (nextTrackRef.current) {
-        nextTrackRef.current();
-      }
-    }
-  });
-
   const loadData = useCallback(async () => {
     const allTracks = await db.getAllTracks();
     const allPlaylists = await db.getPlaylists();
     setTracks(allTracks);
     setPlaylists(allPlaylists);
   }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const currentTracks = tracks.filter(t => {
-    const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          t.artist.toLowerCase().includes(searchQuery.toLowerCase());
-    if (activePlaylistId === 'all') return matchesSearch;
-    const playlist = playlists.find(p => p.id === activePlaylistId);
-    return playlist?.trackIds.includes(t.id) && matchesSearch;
-  });
 
   const playTrack = useCallback(async (track: TrackMetadata) => {
     if (currentUrlRef.current) {
@@ -73,12 +51,27 @@ export default function GlitchPlayer() {
     currentUrlRef.current = url;
     setCurrentTrackId(track.id);
     player.play(url);
-  }, [player]);
+  }, []);
+
+  const player = useAudioPlayer({
+    onEnded: () => {
+      if (nextTrackRef.current) {
+        nextTrackRef.current();
+      }
+    }
+  });
+
+  const currentTracks = tracks.filter(t => {
+    const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          t.artist.toLowerCase().includes(searchQuery.toLowerCase());
+    if (activePlaylistId === 'all') return matchesSearch;
+    const playlist = playlists.find(p => p.id === activePlaylistId);
+    return playlist?.trackIds.includes(t.id) && matchesSearch;
+  });
 
   const nextTrack = useCallback(() => {
     if (!currentTrackId || currentTracks.length === 0) return;
     
-    // Handle repeat one
     if (player.repeat === 'one') {
       const track = currentTracks.find(t => t.id === currentTrackId);
       if (track) playTrack(track);
@@ -118,6 +111,10 @@ export default function GlitchPlayer() {
     const prevIdx = (idx - 1 + currentTracks.length) % currentTracks.length;
     playTrack(currentTracks[prevIdx]);
   }, [currentTrackId, currentTracks, playTrack]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -235,10 +232,10 @@ export default function GlitchPlayer() {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        <aside className="w-72 border-r-4 border-accent bg-secondary/10 overflow-y-auto">
-          <div className="p-4 space-y-4">
+        <aside className="w-80 border-r-4 border-accent bg-secondary/10 overflow-y-auto">
+          <div className="p-4 space-y-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-headline text-xs text-muted-foreground uppercase tracking-widest">Library</span>
+              <span className="font-headline text-sm text-muted-foreground uppercase tracking-widest">Library</span>
               <div className="flex gap-2">
                 <label title="Upload Folder as Playlist" className="p-1 hover:text-primary transition-colors cursor-pointer">
                   <FolderPlus size={20} strokeWidth={3} />
@@ -253,15 +250,15 @@ export default function GlitchPlayer() {
               </div>
             </div>
             
-            <nav className="space-y-2">
+            <nav className="space-y-3">
               <button 
                 onClick={() => setActivePlaylistId('all')}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 text-left font-headline text-xs transition-all pixel-border-sm",
+                  "w-full flex items-center gap-4 px-4 py-4 text-left font-headline text-sm transition-all pixel-border-sm",
                   activePlaylistId === 'all' ? "bg-primary text-white" : "bg-background hover:bg-secondary/50"
                 )}
               >
-                <Music size={14} />
+                <Music size={18} />
                 ALL TRACKS
               </button>
 
@@ -270,18 +267,18 @@ export default function GlitchPlayer() {
                   <button 
                     onClick={() => setActivePlaylistId(playlist.id)}
                     className={cn(
-                      "w-full flex items-center gap-3 px-4 py-3 text-left font-headline text-xs transition-all pixel-border-sm",
+                      "w-full flex items-center gap-4 px-4 py-4 text-left font-headline text-sm transition-all pixel-border-sm",
                       activePlaylistId === playlist.id ? "bg-primary text-white" : "bg-background hover:bg-secondary/50"
                     )}
                   >
-                    <FolderOpen size={14} />
+                    <FolderOpen size={18} />
                     {playlist.name.toUpperCase()}
                   </button>
                   <button 
                     onClick={() => deletePlaylist(playlist.id)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-destructive hover:scale-110 transition-all p-1"
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={16} />
                   </button>
                 </div>
               ))}
@@ -295,14 +292,14 @@ export default function GlitchPlayer() {
               <h2 className="font-headline text-2xl mb-1">
                 {activePlaylistId === 'all' ? 'ALL TRACKS' : playlists.find(p => p.id === activePlaylistId)?.name.toUpperCase()}
               </h2>
-              <p className="text-lg font-body text-muted-foreground">
+              <p className="text-xl font-body text-muted-foreground">
                 {currentTracks.length} SONGS FOUND
               </p>
             </div>
           </div>
 
           <div className="space-y-2">
-            <div className="grid grid-cols-12 gap-4 px-4 py-2 text-xs font-headline text-muted-foreground border-b-2 border-muted uppercase">
+            <div className="grid grid-cols-12 gap-4 px-4 py-2 text-sm font-headline text-muted-foreground border-b-2 border-muted uppercase">
               <div className="col-span-1">#</div>
               <div className="col-span-5">Title</div>
               <div className="col-span-3">Artist</div>
@@ -319,9 +316,9 @@ export default function GlitchPlayer() {
                   currentTrackId === track.id ? "bg-primary/5 border-primary shadow-[2px_2px_0px_0px_hsl(var(--primary))]" : "bg-white"
                 )}
               >
-                <div className="col-span-1 font-body text-lg text-muted-foreground">
+                <div className="col-span-1 font-body text-xl text-muted-foreground">
                   {currentTrackId === track.id && player.isPlaying ? (
-                    <div className="flex gap-0.5 items-end h-3">
+                    <div className="flex gap-0.5 items-end h-4">
                       <div className="w-1 bg-primary animate-bounce [animation-duration:0.5s]" />
                       <div className="w-1 bg-primary animate-bounce [animation-duration:0.8s]" />
                       <div className="w-1 bg-primary animate-bounce [animation-duration:0.6s]" />
@@ -333,13 +330,13 @@ export default function GlitchPlayer() {
                 <div className="col-span-5 font-headline text-sm truncate">
                   {track.name}
                 </div>
-                <div className="col-span-3 font-body text-lg truncate">
+                <div className="col-span-3 font-body text-xl truncate">
                   {track.artist}
                 </div>
-                <div className="col-span-2 font-body text-lg truncate text-muted-foreground">
+                <div className="col-span-2 font-body text-xl truncate text-muted-foreground">
                   {track.album}
                 </div>
-                <div className="col-span-1 font-body text-lg text-right">
+                <div className="col-span-1 font-body text-xl text-right">
                   --:--
                 </div>
               </div>
@@ -354,10 +351,10 @@ export default function GlitchPlayer() {
             <Music size={32} />
           </div>
           <div className="overflow-hidden">
-            <div className="font-headline text-xs truncate mb-1">
+            <div className="font-headline text-xs truncate mb-1 uppercase tracking-tight">
               {currentTrack?.name || 'NO TRACK SELECTED'}
             </div>
-            <div className="font-body text-sm text-secondary/60 truncate uppercase">
+            <div className="font-body text-lg text-secondary/60 truncate uppercase">
               {currentTrack?.artist || 'SYSTEM IDLE'}
             </div>
           </div>
@@ -378,7 +375,7 @@ export default function GlitchPlayer() {
             />
             <button 
               onClick={player.togglePlay}
-              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border-sm hover:scale-105 transition-all"
+              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all"
             >
               {player.isPlaying ? <Pause fill="white" size={24} /> : <Play fill="white" size={24} />}
             </button>
