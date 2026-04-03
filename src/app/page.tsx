@@ -61,13 +61,20 @@ export default function GlitchPlayer() {
   [playlists, activePlaylistId]);
 
   const filteredTracks = useMemo(() => {
-    if (!currentPlaylist) return [];
+    const term = searchQuery.toLowerCase().trim();
     
-    return tracks.filter(t => {
-      if (!currentPlaylist.trackIds.includes(t.id)) return false;
-      const term = searchQuery.toLowerCase();
-      return t.name.toLowerCase().includes(term) || t.artist.toLowerCase().includes(term);
-    });
+    // Universal Search: If searching, ignore playlist boundaries
+    if (term) {
+      return tracks.filter(t => 
+        t.name.toLowerCase().includes(term) || 
+        t.artist.toLowerCase().includes(term) ||
+        t.album.toLowerCase().includes(term)
+      );
+    }
+
+    // Normal view: filter by active playlist
+    if (!currentPlaylist) return [];
+    return tracks.filter(t => currentPlaylist.trackIds.includes(t.id));
   }, [tracks, currentPlaylist, searchQuery]);
 
   const playTrack = useCallback(async (track: TrackMetadata) => {
@@ -231,13 +238,13 @@ export default function GlitchPlayer() {
         />
 
         <main className="flex-1 overflow-hidden bg-background">
-          {activePlaylistId ? (
+          {(activePlaylistId || searchQuery.trim()) ? (
             <TrackList 
               tracks={filteredTracks}
               currentTrackId={currentTrackId}
               isPlaying={player.isPlaying}
               onPlay={playTrack}
-              playlistName={currentPlaylist?.name}
+              playlistName={searchQuery.trim() ? `SEARCH: ${searchQuery.toUpperCase()}` : currentPlaylist?.name}
             />
           ) : (
             <div className="h-full flex flex-col items-center justify-center text-center p-12 opacity-40">
