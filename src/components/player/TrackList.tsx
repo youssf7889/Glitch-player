@@ -12,6 +12,13 @@ interface TrackListProps {
   playlistName?: string;
 }
 
+const formatTime = (seconds: number) => {
+  if (!seconds || isNaN(seconds)) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
 const TrackRow = React.memo(({ 
   track, 
   index, 
@@ -29,7 +36,7 @@ const TrackRow = React.memo(({
     <div 
       onClick={() => onPlay(track)}
       className={cn(
-        "grid grid-cols-12 gap-4 px-6 py-0.5 pixel-border-sm cursor-pointer items-center transition-all w-full",
+        "grid grid-cols-12 gap-4 px-6 py-1 pixel-border-sm cursor-pointer items-center transition-all w-full",
         isActive 
           ? "bg-primary/10 border-primary shadow-[4px_4px_0px_0px_hsl(var(--primary))] translate-x-1" 
           : "bg-card hover:bg-secondary/20"
@@ -38,7 +45,7 @@ const TrackRow = React.memo(({
       <div className="col-span-1 font-body text-xl text-muted-foreground flex items-center gap-2">
         <span className="w-8 text-center">{(index + 1).toString().padStart(2, '0')}</span>
       </div>
-      <div className="col-span-8 flex items-center gap-3 min-w-0">
+      <div className="col-span-7 flex items-center gap-3 min-w-0">
         <div className={cn(
           "font-headline text-lg font-bold truncate uppercase tracking-tight",
           isActive ? "text-primary" : ""
@@ -46,8 +53,11 @@ const TrackRow = React.memo(({
           {track.name}
         </div>
       </div>
-      <div className="col-span-3 font-body text-lg truncate opacity-70 text-right pr-4">
+      <div className="col-span-3 font-body text-lg truncate opacity-70 text-right">
         {track.artist}
+      </div>
+      <div className="col-span-1 font-body text-lg opacity-60 text-right pr-2 tabular-nums">
+        {formatTime(track.duration)}
       </div>
     </div>
     
@@ -88,8 +98,9 @@ export const TrackList = React.memo(({
       <div className="space-y-1.5 pb-8">
         <div className="grid grid-cols-12 gap-4 px-6 py-1 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase tracking-widest">
           <div className="col-span-1">#</div>
-          <div className="col-span-8">Title</div>
-          <div className="col-span-3 text-right pr-4">Artist</div>
+          <div className="col-span-7">Title</div>
+          <div className="col-span-3 text-right">Artist</div>
+          <div className="col-span-1 text-right pr-2">Time</div>
         </div>
 
         {tracks.map((track, i) => (
