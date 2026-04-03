@@ -363,15 +363,12 @@ export default function GlitchPlayer() {
                   <button 
                     onClick={() => setActivePlaylistId(playlist.id)}
                     className={cn(
-                      "w-full flex items-center gap-3 px-3 py-2 text-left font-headline text-sm transition-all pixel-border-sm min-w-0 pr-10",
+                      "w-full flex items-center gap-3 px-3 py-1 text-left font-headline text-sm transition-all pixel-border-sm min-w-0 pr-10",
                       activePlaylistId === playlist.id ? "bg-primary text-white" : "bg-background hover:bg-secondary/50"
                     )}
                   >
                     <FolderOpen size={16} className="shrink-0" />
-                    <span 
-                      className="truncate flex-1 uppercase whitespace-nowrap overflow-hidden"
-                      style={{ maskImage: 'linear-gradient(to right, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 80%, transparent 100%)' }}
-                    >
+                    <span className="truncate flex-1 uppercase whitespace-nowrap overflow-hidden">
                       {playlist.name}
                     </span>
                   </button>
