@@ -26,8 +26,9 @@ export const Sidebar = React.memo(({
   const [isEditing, setIsEditing] = useState(false);
 
   return (
-    <aside className="w-56 border-r-4 border-accent bg-secondary/10 overflow-y-auto">
-      <div className="p-4 space-y-6">
+    <aside className="w-56 border-r-4 border-accent bg-secondary/10 flex flex-col overflow-hidden">
+      {/* Fixed Header */}
+      <div className="p-4 flex-shrink-0">
         <div className="flex items-center justify-between mb-2">
           <span className="font-headline text-sm text-muted-foreground uppercase tracking-widest">Library</span>
           <div className="flex gap-2">
@@ -53,66 +54,67 @@ export const Sidebar = React.memo(({
             </button>
           </div>
         </div>
-        
-        <nav className="space-y-2">
-          {playlists.map((playlist, idx) => (
-            <div key={playlist.id} className="relative group flex items-stretch gap-1">
-              {/* The "Line to the side" Column visible only in Edit Mode */}
-              {isEditing && (
-                <div className="flex flex-col items-center justify-center bg-accent/10 py-1 px-1 border-l-2 border-primary pixel-border-sm shadow-none">
-                  <button 
-                    onClick={() => onReorderPlaylist(playlist.id, 'up')}
-                    className="text-muted-foreground hover:text-primary disabled:opacity-20 mb-1"
-                    disabled={idx === 0}
-                  >
-                    <ChevronUp size={14} strokeWidth={3} />
-                  </button>
-                  <div className="text-primary/40 -my-1">
-                    <GripVertical size={12} />
-                  </div>
-                  <button 
-                    onClick={() => onReorderPlaylist(playlist.id, 'down')}
-                    className="text-muted-foreground hover:text-primary disabled:opacity-20 mt-1"
-                    disabled={idx === playlists.length - 1}
-                  >
-                    <ChevronDown size={14} strokeWidth={3} />
-                  </button>
-                </div>
-              )}
-
-              <button 
-                onClick={() => !isEditing && setActivePlaylistId(playlist.id)}
-                className={cn(
-                  "flex-1 flex items-center gap-3 px-3 py-3 text-left font-headline text-sm transition-all pixel-border-sm min-w-0",
-                  activePlaylistId === playlist.id ? "bg-primary text-white" : "bg-background hover:bg-secondary/50",
-                  isEditing && "cursor-default opacity-80"
-                )}
-              >
-                <FolderOpen size={16} className="shrink-0" />
-                <span className="truncate flex-1 uppercase">
-                  {playlist.name}
-                </span>
-              </button>
-              
-              {isEditing && (
-                <button 
-                  onClick={() => onDeletePlaylist(playlist.id)}
-                  className="p-1 flex items-center justify-center text-destructive hover:bg-destructive/10 pixel-border-sm bg-background ml-1"
-                  title="Remove Playlist"
-                >
-                  <Trash2 size={16} strokeWidth={3} />
-                </button>
-              )}
-            </div>
-          ))}
-
-          {playlists.length === 0 && (
-            <div className="p-6 text-center border-2 border-dashed border-muted">
-              <p className="text-xl text-muted-foreground uppercase">Pick folders</p>
-            </div>
-          )}
-        </nav>
       </div>
+      
+      {/* Scrollable Navigation */}
+      <nav className="flex-1 overflow-y-auto px-4 pb-4 space-y-2 custom-scrollbar">
+        {playlists.map((playlist, idx) => (
+          <div key={playlist.id} className="relative group flex items-stretch gap-1">
+            {/* Reorder Controls (Edit Mode) */}
+            {isEditing && (
+              <div className="flex flex-col items-center justify-center bg-accent/10 py-1 px-1 border-l-2 border-primary pixel-border-sm shadow-none">
+                <button 
+                  onClick={() => onReorderPlaylist(playlist.id, 'up')}
+                  className="text-muted-foreground hover:text-primary disabled:opacity-20 mb-1"
+                  disabled={idx === 0}
+                >
+                  <ChevronUp size={14} strokeWidth={3} />
+                </button>
+                <div className="text-primary/40 -my-1">
+                  <GripVertical size={12} />
+                </div>
+                <button 
+                  onClick={() => onReorderPlaylist(playlist.id, 'down')}
+                  className="text-muted-foreground hover:text-primary disabled:opacity-20 mt-1"
+                  disabled={idx === playlists.length - 1}
+                >
+                  <ChevronDown size={14} strokeWidth={3} />
+                </button>
+              </div>
+            )}
+
+            <button 
+              onClick={() => !isEditing && setActivePlaylistId(playlist.id)}
+              className={cn(
+                "flex-1 flex items-center gap-3 px-3 py-3 text-left font-headline text-sm transition-all pixel-border-sm min-w-0",
+                activePlaylistId === playlist.id ? "bg-primary text-white" : "bg-background hover:bg-secondary/50",
+                isEditing && "cursor-default opacity-80"
+              )}
+            >
+              <FolderOpen size={16} className="shrink-0" />
+              <span className="truncate flex-1 uppercase">
+                {playlist.name}
+              </span>
+            </button>
+            
+            {isEditing && (
+              <button 
+                onClick={() => onDeletePlaylist(playlist.id)}
+                className="p-1 flex items-center justify-center text-destructive hover:bg-destructive/10 pixel-border-sm bg-background ml-1"
+                title="Remove Playlist"
+              >
+                <Trash2 size={16} strokeWidth={3} />
+              </button>
+            )}
+          </div>
+        ))}
+
+        {playlists.length === 0 && (
+          <div className="p-6 text-center border-2 border-dashed border-muted">
+            <p className="text-xl text-muted-foreground uppercase">Pick folders</p>
+          </div>
+        )}
+      </nav>
     </aside>
   );
 });

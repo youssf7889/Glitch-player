@@ -4,6 +4,7 @@
 import React from 'react';
 import { TrackMetadata } from '@/lib/db';
 import { cn } from '@/lib/utils';
+import { Music } from 'lucide-react';
 
 interface TrackListProps {
   tracks: TrackMetadata[];
@@ -34,6 +35,7 @@ const TrackRow = React.memo(({
   onPlay: (t: TrackMetadata) => void
 }) => (
   <div className="relative flex items-center group">
+    {/* Active Track Indicator (The Thingy) */}
     {isActive && (
       <div className={cn(
         "absolute -left-2 z-10 flex items-center text-primary filter drop-shadow-[2px_2px_0px_rgba(0,0,0,0.2)]",
@@ -84,9 +86,9 @@ export const TrackList = React.memo(({
   playlistName 
 }: TrackListProps) => {
   return (
-    <div className="h-full flex flex-col">
-      {/* Sticky Header */}
-      <div className="bg-background z-20 px-6 pt-6 pb-2">
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Fixed Header Section */}
+      <div className="bg-background flex-shrink-0 px-6 pt-6 pb-2 z-20">
         <div className="mb-4">
           <h2 className="font-headline text-2xl mb-1 uppercase truncate max-w-xl tracking-[0.2em] text-accent">
             {playlistName || 'CHOOSE A PLAYLIST'}
@@ -96,6 +98,7 @@ export const TrackList = React.memo(({
           </p>
         </div>
 
+        {/* Column Labels */}
         <div className="grid grid-cols-12 gap-4 px-6 py-1 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase tracking-widest ml-4">
           <div className="col-span-1">#</div>
           <div className="col-span-7">Title</div>
@@ -104,7 +107,7 @@ export const TrackList = React.memo(({
         </div>
       </div>
 
-      {/* Scrollable Cards Only */}
+      {/* Scrollable Cards Area */}
       <div className="flex-1 overflow-y-auto px-6 space-y-1.5 pb-8 custom-scrollbar">
         {tracks.map((track, i) => (
           <TrackRow 
