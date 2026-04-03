@@ -1,4 +1,3 @@
-
 "use client";
 
 import { FolderOpen, FolderPlus, Trash2, ChevronUp, ChevronDown, Settings, GripVertical } from 'lucide-react';

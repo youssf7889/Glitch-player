@@ -97,6 +97,9 @@ export const TrackList = React.memo(({
           </p>
         </div>
 
+        {/* Soft Line Above Column Headers */}
+        <div className="border-t-2 border-muted mb-1 ml-6" />
+
         {/* Column Labels */}
         <div className="grid grid-cols-12 gap-4 px-6 py-1 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase tracking-widest ml-6">
           <div className="col-span-1">#</div>
