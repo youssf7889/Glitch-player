@@ -50,13 +50,13 @@ export const PlayerFooter = React.memo(({
 }: PlayerFooterProps) => {
   return (
     <footer className="h-28 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1fr_4fr_1fr] items-center">
-      {/* Track Info Section - Only Album Art */}
+      {/* Track Info Section - Enlarged Album Art with stronger shadow */}
       <div className="flex items-center gap-4 justify-start min-w-0 overflow-hidden pr-4">
-        <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">
+        <div className="w-20 h-20 bg-primary pixel-border flex-shrink-0 flex items-center justify-center overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)]">
           {currentArtUrl ? (
             <img src={currentArtUrl} alt="" className="w-full h-full object-cover" />
           ) : (
-            <Music size={24} />
+            <Music size={32} />
           )}
         </div>
       </div>
@@ -118,7 +118,7 @@ export const PlayerFooter = React.memo(({
           </div>
         </div>
         
-        <div className="w-full max-w-[1200px]">
+        <div className="w-full max-w-[2400px]">
           <ProgressBar 
             current={currentTime} 
             total={duration} 
