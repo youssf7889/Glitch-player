@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -32,11 +33,21 @@ const TrackRow = React.memo(({
   isPlaying: boolean,
   onPlay: (t: TrackMetadata) => void
 }) => (
-  <div className="relative flex items-center">
+  <div className="relative flex items-center group">
+    {isActive && (
+      <div className={cn(
+        "absolute -left-2 z-10 flex items-center text-primary filter drop-shadow-[2px_2px_0px_rgba(0,0,0,0.2)]",
+        isPlaying && "animate-pulse"
+      )}>
+        <div className="w-1.5 h-3 bg-primary" />
+        <div className="w-2 h-2 border-r-2 border-t-2 border-primary rotate-[45deg] -ml-[3px]" />
+      </div>
+    )}
+
     <div 
       onClick={() => onPlay(track)}
       className={cn(
-        "grid grid-cols-12 gap-4 px-6 py-1 pixel-border-sm cursor-pointer items-center transition-all w-full",
+        "grid grid-cols-12 gap-4 px-6 py-1 pixel-border-sm cursor-pointer items-center transition-all w-full ml-4",
         isActive 
           ? "bg-primary/10 border-primary shadow-[4px_4px_0px_0px_hsl(var(--primary))] translate-x-1" 
           : "bg-card hover:bg-secondary/20"
@@ -60,16 +71,6 @@ const TrackRow = React.memo(({
         {formatTime(track.duration)}
       </div>
     </div>
-    
-    {isActive && (
-      <div className={cn(
-        "absolute -right-4 flex items-center text-primary filter drop-shadow-[2px_2px_0px_rgba(0,0,0,0.2)]",
-        isPlaying && "animate-pulse"
-      )}>
-        <div className="w-2 h-2 border-l-2 border-t-2 border-primary rotate-[135deg]" />
-        <div className="w-1.5 h-3 bg-primary -ml-[2px]" />
-      </div>
-    )}
   </div>
 ));
 
@@ -83,9 +84,10 @@ export const TrackList = React.memo(({
   playlistName 
 }: TrackListProps) => {
   return (
-    <div className="space-y-4">
-      <div className="mb-4 flex items-end justify-between">
-        <div>
+    <div className="h-full flex flex-col">
+      {/* Sticky Header */}
+      <div className="bg-background z-20 px-6 pt-6 pb-2">
+        <div className="mb-4">
           <h2 className="font-headline text-2xl mb-1 uppercase truncate max-w-xl tracking-[0.2em] text-accent">
             {playlistName || 'CHOOSE A PLAYLIST'}
           </h2>
@@ -93,16 +95,17 @@ export const TrackList = React.memo(({
             {tracks.length} SONGS FOUND
           </p>
         </div>
-      </div>
 
-      <div className="space-y-1.5 pb-8">
-        <div className="grid grid-cols-12 gap-4 px-6 py-1 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase tracking-widest">
+        <div className="grid grid-cols-12 gap-4 px-6 py-1 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase tracking-widest ml-4">
           <div className="col-span-1">#</div>
           <div className="col-span-7">Title</div>
           <div className="col-span-3 text-right">Artist</div>
           <div className="col-span-1 text-right pr-2">Time</div>
         </div>
+      </div>
 
+      {/* Scrollable Cards Only */}
+      <div className="flex-1 overflow-y-auto px-6 space-y-1.5 pb-8 custom-scrollbar">
         {tracks.map((track, i) => (
           <TrackRow 
             key={track.id} 
@@ -113,6 +116,12 @@ export const TrackList = React.memo(({
             onPlay={onPlay}
           />
         ))}
+        {tracks.length === 0 && (
+          <div className="py-20 text-center opacity-30">
+            <Music size={48} className="mx-auto mb-4" />
+            <p className="font-headline uppercase">Empty Tracklist</p>
+          </div>
+        )}
       </div>
     </div>
   );

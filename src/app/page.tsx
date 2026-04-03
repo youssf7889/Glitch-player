@@ -177,7 +177,6 @@ export default function GlitchPlayer() {
     const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
     [newPlaylists[idx], newPlaylists[swapIdx]] = [newPlaylists[swapIdx], newPlaylists[idx]];
 
-    // Update indexes and save
     const updates = newPlaylists.map((p, i) => {
       p.index = i;
       return db.savePlaylist(p);
@@ -200,7 +199,7 @@ export default function GlitchPlayer() {
 
   return (
     <div className="h-screen w-full flex flex-col overflow-hidden bg-background text-foreground font-body select-none">
-      <header className="h-16 flex items-center justify-between px-6 border-b-4 border-accent bg-secondary/30">
+      <header className="h-16 flex items-center justify-between px-6 border-b-4 border-accent bg-secondary/30 flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-primary pixel-border-sm flex items-center justify-center text-white">
             <Music size={18} strokeWidth={3} />
@@ -231,7 +230,7 @@ export default function GlitchPlayer() {
           onReorderPlaylist={handleReorderPlaylists}
         />
 
-        <main className="flex-1 overflow-y-auto p-6 bg-background">
+        <main className="flex-1 overflow-hidden bg-background">
           {activePlaylistId ? (
             <TrackList 
               tracks={filteredTracks}
