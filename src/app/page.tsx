@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -211,7 +210,7 @@ export default function GlitchPlayer() {
           <div className="w-8 h-8 bg-primary pixel-border-sm flex items-center justify-center text-white">
             <Music size={18} strokeWidth={3} />
           </div>
-          <h1 className="font-headline text-xl md:text-2xl tracking-[0.15em] uppercase text-primary filter drop-shadow-[2px_2px_0px_hsl(var(--accent))]">
+          <h1 className="font-headline text-xl md:text-2xl font-bold tracking-[0.15em] uppercase text-primary">
             グリッチプレイヤー
           </h1>
         </div>
