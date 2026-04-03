@@ -49,7 +49,7 @@ export const PlayerFooter = React.memo(({
   setRepeat
 }: PlayerFooterProps) => {
   return (
-    <footer className="h-28 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1.2fr_2fr_1.2fr] items-center">
+    <footer className="h-28 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1fr_4fr_1fr] items-center">
       {/* Track Info Section */}
       <div className="flex items-center gap-4 justify-start min-w-0 overflow-hidden pr-4">
         <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]">
@@ -90,7 +90,7 @@ export const PlayerFooter = React.memo(({
             
             <button 
               onClick={onTogglePlay}
-              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border mx-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.3)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 transition-all"
+              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border mx-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.3)] transition-none active:shadow-none"
               title={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (
@@ -126,7 +126,7 @@ export const PlayerFooter = React.memo(({
           </div>
         </div>
         
-        <div className="w-full max-w-xl">
+        <div className="w-full max-w-4xl">
           <ProgressBar 
             current={currentTime} 
             total={duration} 
