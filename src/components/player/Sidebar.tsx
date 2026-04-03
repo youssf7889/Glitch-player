@@ -27,8 +27,8 @@ export const Sidebar = React.memo(({
 
   return (
     <aside className="w-56 border-r-4 border-accent bg-secondary/10 flex flex-col overflow-hidden">
-      {/* Fixed Header */}
-      <div className="p-4 flex-shrink-0">
+      {/* Fixed Header with Soft Line */}
+      <div className="p-4 flex-shrink-0 border-b-2 border-muted">
         <div className="flex items-center justify-between mb-2">
           <span className="font-headline text-sm text-muted-foreground uppercase tracking-widest">Library</span>
           <div className="flex gap-2">
@@ -57,7 +57,7 @@ export const Sidebar = React.memo(({
       </div>
       
       {/* Scrollable Navigation */}
-      <nav className="flex-1 overflow-y-auto px-4 pb-4 space-y-2 custom-scrollbar">
+      <nav className="flex-1 overflow-y-auto px-4 pb-4 space-y-2 custom-scrollbar pt-4">
         {playlists.map((playlist, idx) => (
           <div key={playlist.id} className="relative group flex items-stretch gap-1">
             {/* Reorder Controls (Edit Mode) */}
