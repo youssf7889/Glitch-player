@@ -48,7 +48,8 @@ export const PlayerFooter = React.memo(({
   setRepeat
 }: PlayerFooterProps) => {
   return (
-    <footer className="h-24 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1.2fr_2fr_1.2fr] items-center">
+    <footer className="h-28 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1.2fr_2fr_1.2fr] items-center">
+      {/* Track Info Section */}
       <div className="flex items-center gap-4 justify-start min-w-0 overflow-hidden pr-4">
         <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden">
           {currentArtUrl ? (
@@ -67,47 +68,63 @@ export const PlayerFooter = React.memo(({
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center w-full px-4 gap-2">
-        <div className="flex items-center justify-center gap-3">
+      {/* Main Controls Section */}
+      <div className="flex flex-col items-center justify-center w-full px-4 gap-3">
+        <div className="flex items-center justify-center gap-4">
           <ControlIcon 
             icon={Shuffle} 
-            size={16}
+            size={14}
             active={shuffle} 
             onClick={() => setShuffle(!shuffle)} 
+            className="opacity-60 hover:opacity-100"
           />
-          <ControlIcon 
-            icon={SkipBack} 
-            size={18}
-            onClick={onPrev} 
-          />
-          <button 
-            onClick={onTogglePlay}
-            className="w-10 h-10 bg-primary flex items-center justify-center pixel-border-sm hover:translate-y-0.5 transition-all mx-1"
-          >
-            {isPlaying ? <Pause fill="white" size={20} /> : <Play fill="white" size={20} />}
-          </button>
-          <ControlIcon 
-            icon={SkipForward} 
-            size={18}
-            onClick={onNext} 
-          />
+          
+          <div className="flex items-center gap-2">
+            <ControlIcon 
+              icon={SkipBack} 
+              size={18}
+              onClick={onPrev} 
+            />
+            
+            {/* Primary Action Button: Play/Pause */}
+            <button 
+              onClick={onTogglePlay}
+              className="w-14 h-14 bg-primary flex items-center justify-center pixel-border hover:translate-y-0.5 transition-all mx-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.4)] active:shadow-none active:translate-x-1 active:translate-y-1"
+              title={isPlaying ? "Pause" : "Play"}
+            >
+              {isPlaying ? (
+                <Pause fill="white" size={28} strokeWidth={3} />
+              ) : (
+                <Play fill="white" size={28} strokeWidth={3} className="ml-1" />
+              )}
+            </button>
+            
+            <ControlIcon 
+              icon={SkipForward} 
+              size={18}
+              onClick={onNext} 
+            />
+          </div>
+
           <div className="relative">
             <ControlIcon 
               icon={Repeat} 
-              size={16}
+              size={14}
               active={repeat !== 'none'} 
               onClick={() => {
                 const modes: ('none' | 'all' | 'one')[] = ['none', 'all', 'one'];
                 const nextIdx = (modes.indexOf(repeat) + 1) % modes.length;
                 setRepeat(modes[nextIdx]);
               }} 
+              className="opacity-60 hover:opacity-100"
             />
             {repeat === 'one' && (
               <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-primary px-0.5 border border-white leading-none flex items-center justify-center h-3 w-3">1</span>
             )}
           </div>
         </div>
-        <div className="w-full">
+        
+        <div className="w-full max-w-xl">
           <ProgressBar 
             current={currentTime} 
             total={duration} 
@@ -116,6 +133,7 @@ export const PlayerFooter = React.memo(({
         </div>
       </div>
 
+      {/* Volume Section */}
       <div className="flex items-center justify-end gap-6 min-w-0 pl-4">
         <div className="flex items-center gap-3 w-48">
           <ControlIcon 
@@ -124,22 +142,19 @@ export const PlayerFooter = React.memo(({
             onClick={onToggleMute} 
           />
           <div className="flex-1 h-4 relative flex items-center group">
-            {/* Dotted Background Track */}
             <div 
-              className="absolute inset-x-0 h-0.5"
+              className="absolute inset-x-0 h-0.5 opacity-30"
               style={{
-                backgroundImage: `radial-gradient(circle, hsl(var(--primary)) 25%, transparent 25%)`,
+                backgroundImage: `radial-gradient(circle, white 25%, transparent 25%)`,
                 backgroundSize: '6px 100%',
                 backgroundRepeat: 'repeat-x',
                 backgroundPosition: 'center'
               }}
             />
-            {/* Solid Progress Line */}
             <div 
               className="absolute left-0 h-1 bg-primary z-10"
               style={{ width: `${volume * 100}%` }}
             />
-            {/* Square Thumb (Visual Overlay) */}
             <div 
               className="absolute w-3 h-3 bg-primary z-20 pointer-events-none pixel-border-sm"
               style={{ 
