@@ -12,11 +12,11 @@ export function ProgressBar({ current, total, onSeek }: ProgressBarProps) {
 
   return (
     <div className="flex items-center gap-4 w-full group">
-      <span className="text-xl font-body w-16 text-right tabular-nums text-white/90">
+      <span className="text-lg font-body w-14 text-right tabular-nums text-white/80">
         {formatTime(current)}
       </span>
       <div 
-        className="relative h-4 flex-1 cursor-pointer border-2 border-primary bg-accent/40 overflow-hidden"
+        className="relative h-2 flex-1 cursor-pointer border-2 border-primary bg-accent/40 overflow-hidden"
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           const x = e.clientX - rect.left;
@@ -29,7 +29,7 @@ export function ProgressBar({ current, total, onSeek }: ProgressBarProps) {
           style={{ width: `${percentage}%` }}
         />
       </div>
-      <span className="text-xl font-body w-16 tabular-nums text-white/90">
+      <span className="text-lg font-body w-14 tabular-nums text-white/80">
         {formatTime(total)}
       </span>
     </div>

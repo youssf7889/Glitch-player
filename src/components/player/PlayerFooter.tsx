@@ -52,7 +52,7 @@ export const PlayerFooter = React.memo(({
     <footer className="h-28 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1.2fr_2fr_1.2fr] items-center">
       {/* Track Info Section */}
       <div className="flex items-center gap-4 justify-start min-w-0 overflow-hidden pr-4">
-        <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden shadow-[3px_3px_0px_0px_rgba(0,0,0,0.25)]">
+        <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]">
           {currentArtUrl ? (
             <img src={currentArtUrl} alt="" className="w-full h-full object-cover" />
           ) : (
@@ -77,7 +77,7 @@ export const PlayerFooter = React.memo(({
             size={14}
             active={shuffle} 
             onClick={() => setShuffle(!shuffle)} 
-            className="opacity-80 hover:opacity-100 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]"
+            className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]"
           />
           
           <div className="flex items-center gap-2">
@@ -88,7 +88,6 @@ export const PlayerFooter = React.memo(({
               className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]"
             />
             
-            {/* Primary Action Button: Play/Pause */}
             <button 
               onClick={onTogglePlay}
               className="w-12 h-12 bg-primary flex items-center justify-center pixel-border mx-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.3)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 transition-all"
@@ -119,7 +118,7 @@ export const PlayerFooter = React.memo(({
                 const nextIdx = (modes.indexOf(repeat) + 1) % modes.length;
                 setRepeat(modes[nextIdx]);
               }} 
-              className="opacity-80 hover:opacity-100 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]"
+              className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]"
             />
             {repeat === 'one' && (
               <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-primary px-0.5 border border-white leading-none flex items-center justify-center h-3 w-3">1</span>
@@ -137,8 +136,8 @@ export const PlayerFooter = React.memo(({
       </div>
 
       {/* Volume Section */}
-      <div className="flex items-center justify-end gap-6 min-w-0 pl-4">
-        <div className="flex items-center gap-3 w-48">
+      <div className="flex items-center justify-end gap-3 min-w-0 pl-4">
+        <div className="flex items-center gap-2 w-36">
           <ControlIcon 
             icon={isMuted ? VolumeX : Volume2} 
             size={18}
