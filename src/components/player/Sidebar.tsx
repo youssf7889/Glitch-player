@@ -54,15 +54,15 @@ export const Sidebar = React.memo(({
           </div>
         </div>
         
-        <nav className="space-y-1.5">
+        <nav className="space-y-2">
           {playlists.map((playlist, idx) => (
-            <div key={playlist.id} className="relative group flex items-center gap-1">
-              {/* The "Line to the side" / Grip Column visible only in Edit Mode */}
+            <div key={playlist.id} className="relative group flex items-stretch gap-1">
+              {/* The "Line to the side" Column visible only in Edit Mode */}
               {isEditing && (
-                <div className="flex flex-col items-center justify-center bg-accent/10 py-1 px-0.5 border-l-2 border-primary">
+                <div className="flex flex-col items-center justify-center bg-accent/10 py-1 px-1 border-l-2 border-primary pixel-border-sm shadow-none">
                   <button 
                     onClick={() => onReorderPlaylist(playlist.id, 'up')}
-                    className="text-muted-foreground hover:text-primary disabled:opacity-20"
+                    className="text-muted-foreground hover:text-primary disabled:opacity-20 mb-1"
                     disabled={idx === 0}
                   >
                     <ChevronUp size={14} strokeWidth={3} />
@@ -72,7 +72,7 @@ export const Sidebar = React.memo(({
                   </div>
                   <button 
                     onClick={() => onReorderPlaylist(playlist.id, 'down')}
-                    className="text-muted-foreground hover:text-primary disabled:opacity-20"
+                    className="text-muted-foreground hover:text-primary disabled:opacity-20 mt-1"
                     disabled={idx === playlists.length - 1}
                   >
                     <ChevronDown size={14} strokeWidth={3} />
@@ -83,7 +83,7 @@ export const Sidebar = React.memo(({
               <button 
                 onClick={() => !isEditing && setActivePlaylistId(playlist.id)}
                 className={cn(
-                  "flex-1 flex items-center gap-3 px-3 py-1.5 text-left font-headline text-sm transition-all pixel-border-sm min-w-0",
+                  "flex-1 flex items-center gap-3 px-3 py-3 text-left font-headline text-sm transition-all pixel-border-sm min-w-0",
                   activePlaylistId === playlist.id ? "bg-primary text-white" : "bg-background hover:bg-secondary/50",
                   isEditing && "cursor-default opacity-80"
                 )}
@@ -97,7 +97,7 @@ export const Sidebar = React.memo(({
               {isEditing && (
                 <button 
                   onClick={() => onDeletePlaylist(playlist.id)}
-                  className="p-1 text-destructive hover:bg-destructive/10 pixel-border-sm bg-background ml-1"
+                  className="p-1 flex items-center justify-center text-destructive hover:bg-destructive/10 pixel-border-sm bg-background ml-1"
                   title="Remove Playlist"
                 >
                   <Trash2 size={16} strokeWidth={3} />
