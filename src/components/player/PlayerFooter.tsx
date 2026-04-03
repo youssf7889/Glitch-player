@@ -76,7 +76,7 @@ export const PlayerFooter = React.memo(({
             size={14}
             active={shuffle} 
             onClick={() => setShuffle(!shuffle)} 
-            className="opacity-60 hover:opacity-100"
+            className="opacity-80 hover:opacity-100"
           />
           
           <div className="flex items-center gap-2">
@@ -89,13 +89,13 @@ export const PlayerFooter = React.memo(({
             {/* Primary Action Button: Play/Pause */}
             <button 
               onClick={onTogglePlay}
-              className="w-14 h-14 bg-primary flex items-center justify-center pixel-border hover:translate-y-0.5 transition-all mx-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.4)] active:shadow-none active:translate-x-1 active:translate-y-1"
+              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border hover:translate-y-0.5 transition-all mx-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.4)] active:shadow-none active:translate-x-1 active:translate-y-1"
               title={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (
-                <Pause fill="white" size={28} strokeWidth={3} />
+                <Pause fill="white" size={24} strokeWidth={3} />
               ) : (
-                <Play fill="white" size={28} strokeWidth={3} className="ml-1" />
+                <Play fill="white" size={24} strokeWidth={3} className="ml-0.5" />
               )}
             </button>
             
@@ -116,7 +116,7 @@ export const PlayerFooter = React.memo(({
                 const nextIdx = (modes.indexOf(repeat) + 1) % modes.length;
                 setRepeat(modes[nextIdx]);
               }} 
-              className="opacity-60 hover:opacity-100"
+              className="opacity-80 hover:opacity-100"
             />
             {repeat === 'one' && (
               <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-primary px-0.5 border border-white leading-none flex items-center justify-center h-3 w-3">1</span>
