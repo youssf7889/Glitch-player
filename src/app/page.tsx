@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -150,12 +151,40 @@ export default function GlitchPlayer() {
       folderMap.get(folderName)!.push(track.id);
     }
 
+    let lastIndex = playlists.length > 0 ? Math.max(...playlists.map(p => p.index || 0)) : -1;
     for (const [name, trackIds] of folderMap.entries()) {
-      await db.savePlaylist({ id: crypto.randomUUID(), name, trackIds, createdAt: Date.now() });
+      lastIndex++;
+      await db.savePlaylist({ id: crypto.randomUUID(), name, trackIds, createdAt: Date.now(), index: lastIndex });
     }
 
     await loadData();
     e.target.value = '';
+  };
+
+  const handleDeletePlaylist = async (id: string) => {
+    await db.deletePlaylist(id);
+    if (activePlaylistId === id) setActivePlaylistId(null);
+    await loadData();
+  };
+
+  const handleReorderPlaylists = async (id: string, direction: 'up' | 'down') => {
+    const idx = playlists.findIndex(p => p.id === id);
+    if (idx === -1) return;
+    if (direction === 'up' && idx === 0) return;
+    if (direction === 'down' && idx === playlists.length - 1) return;
+
+    const newPlaylists = [...playlists];
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    [newPlaylists[idx], newPlaylists[swapIdx]] = [newPlaylists[swapIdx], newPlaylists[idx]];
+
+    // Update indexes and save
+    const updates = newPlaylists.map((p, i) => {
+      p.index = i;
+      return db.savePlaylist(p);
+    });
+
+    await Promise.all(updates);
+    await loadData();
   };
 
   useEffect(() => {
@@ -198,6 +227,8 @@ export default function GlitchPlayer() {
           activePlaylistId={activePlaylistId}
           setActivePlaylistId={setActivePlaylistId}
           handleFolderUpload={handleFolderUpload}
+          onDeletePlaylist={handleDeletePlaylist}
+          onReorderPlaylist={handleReorderPlaylists}
         />
 
         <main className="flex-1 overflow-y-auto p-6 bg-background">

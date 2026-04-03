@@ -16,7 +16,7 @@ export function ProgressBar({ current, total, onSeek }: ProgressBarProps) {
         {formatTime(current)}
       </span>
       <div 
-        className="relative h-5 flex-1 cursor-pointer border-2 border-primary bg-accent/40 overflow-hidden"
+        className="relative h-4 flex-1 cursor-pointer border-2 border-primary bg-accent/40 overflow-hidden"
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           const x = e.clientX - rect.left;

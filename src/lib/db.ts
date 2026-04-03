@@ -21,6 +21,7 @@ export interface Playlist {
   name: string;
   trackIds: string[];
   createdAt: number;
+  index: number; // Added for ordering
 }
 
 let dbPromise: Promise<IDBPDatabase> | null = null;
@@ -60,7 +61,8 @@ export const db = {
   },
   async getPlaylists(): Promise<Playlist[]> {
     const db = await getDB();
-    return db.getAll(STORE_PLAYLISTS);
+    const playlists = await db.getAll(STORE_PLAYLISTS);
+    return playlists.sort((a, b) => (a.index || 0) - (b.index || 0));
   },
   async deletePlaylist(id: string) {
     const db = await getDB();
