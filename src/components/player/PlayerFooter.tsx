@@ -50,22 +50,14 @@ export const PlayerFooter = React.memo(({
 }: PlayerFooterProps) => {
   return (
     <footer className="h-28 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1fr_4fr_1fr] items-center">
-      {/* Track Info Section */}
+      {/* Track Info Section - Only Album Art */}
       <div className="flex items-center gap-4 justify-start min-w-0 overflow-hidden pr-4">
-        <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]">
+        <div className="w-16 h-16 bg-primary pixel-border-sm flex-shrink-0 flex items-center justify-center overflow-hidden shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">
           {currentArtUrl ? (
             <img src={currentArtUrl} alt="" className="w-full h-full object-cover" />
           ) : (
             <Music size={24} />
           )}
-        </div>
-        <div className="overflow-hidden">
-          <div className="font-headline text-sm truncate mb-0.5 uppercase tracking-tight text-primary">
-            {currentTrack?.name || 'IDLE'}
-          </div>
-          <div className="font-body text-2xl text-white/80 truncate uppercase">
-            {currentTrack?.artist || 'SYSTEM'}
-          </div>
         </div>
       </div>
 
@@ -77,7 +69,7 @@ export const PlayerFooter = React.memo(({
             size={14}
             active={shuffle} 
             onClick={() => setShuffle(!shuffle)} 
-            className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]"
+            className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]"
           />
           
           <div className="flex items-center gap-2">
@@ -85,12 +77,12 @@ export const PlayerFooter = React.memo(({
               icon={SkipBack} 
               size={18}
               onClick={onPrev} 
-              className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]"
+              className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]"
             />
             
             <button 
               onClick={onTogglePlay}
-              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border mx-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.3)] transition-none active:shadow-none"
+              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border mx-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.25)] active:shadow-none transition-none"
               title={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (
@@ -104,7 +96,7 @@ export const PlayerFooter = React.memo(({
               icon={SkipForward} 
               size={18}
               onClick={onNext} 
-              className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]"
+              className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]"
             />
           </div>
 
@@ -118,7 +110,7 @@ export const PlayerFooter = React.memo(({
                 const nextIdx = (modes.indexOf(repeat) + 1) % modes.length;
                 setRepeat(modes[nextIdx]);
               }} 
-              className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]"
+              className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]"
             />
             {repeat === 'one' && (
               <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-primary px-0.5 border border-white leading-none flex items-center justify-center h-3 w-3">1</span>
@@ -126,7 +118,7 @@ export const PlayerFooter = React.memo(({
           </div>
         </div>
         
-        <div className="w-full max-w-4xl">
+        <div className="w-full max-w-[1200px]">
           <ProgressBar 
             current={currentTime} 
             total={duration} 
@@ -137,16 +129,16 @@ export const PlayerFooter = React.memo(({
 
       {/* Volume Section */}
       <div className="flex items-center justify-end gap-3 min-w-0 pl-4">
-        <div className="flex items-center gap-2 w-36">
+        <div className="flex items-center gap-2 w-32">
           <ControlIcon 
             icon={isMuted ? VolumeX : Volume2} 
             size={18}
             onClick={onToggleMute} 
-            className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]"
+            className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]"
           />
           <div className="flex-1 h-4 relative flex items-center group">
             <div 
-              className="absolute inset-x-0 h-0.5 opacity-30"
+              className="absolute inset-x-0 h-0.5 opacity-20"
               style={{
                 backgroundImage: `radial-gradient(circle, white 25%, transparent 25%)`,
                 backgroundSize: '6px 100%',
@@ -159,7 +151,7 @@ export const PlayerFooter = React.memo(({
               style={{ width: `${volume * 100}%` }}
             />
             <div 
-              className="absolute w-3 h-3 bg-primary z-20 pointer-events-none pixel-border-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]"
+              className="absolute w-3 h-3 bg-primary z-20 pointer-events-none pixel-border-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]"
               style={{ 
                 left: `${volume * 100}%`,
                 transform: 'translateX(-50%)'
