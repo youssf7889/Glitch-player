@@ -89,7 +89,7 @@ export const PlayerFooter = React.memo(({
             {/* Primary Action Button: Play/Pause */}
             <button 
               onClick={onTogglePlay}
-              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border mx-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.4)]"
+              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border mx-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)]"
               title={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (

@@ -37,7 +37,7 @@ const TrackRow = React.memo(({
     {/* Active Track Indicator (Moved to left) */}
     {isActive && (
       <div className={cn(
-        "absolute left-0 z-10 flex items-center text-primary filter drop-shadow-[3px_3px_0px_rgba(0,0,0,0.3)]",
+        "absolute left-0 z-10 flex items-center text-primary filter drop-shadow-[2px_2px_0px_rgba(0,0,0,0.3)]",
         isPlaying && "animate-pulse"
       )}>
         <div className="w-1.5 h-3 bg-primary" />
@@ -50,7 +50,7 @@ const TrackRow = React.memo(({
       className={cn(
         "grid grid-cols-12 gap-4 px-6 py-1 pixel-border-sm cursor-pointer items-center transition-all w-full ml-6",
         isActive 
-          ? "bg-primary/10 border-primary shadow-[6px_6px_0px_0px_hsl(var(--primary))] translate-x-1" 
+          ? "bg-primary/10 border-primary shadow-[3px_3px_0px_0px_hsl(var(--primary))] translate-x-1" 
           : "bg-card hover:bg-secondary/20"
       )}
     >
