@@ -14,7 +14,7 @@ export function ControlIcon({ icon: Icon, onClick, active, className, size = 20 
     <button
       onClick={onClick}
       className={cn(
-        "p-2 transition-all hover:bg-secondary/20 active:translate-y-0.5 pixel-border-sm",
+        "p-2 hover:bg-secondary/20 pixel-border-sm",
         active 
           ? "bg-primary text-white opacity-100" 
           : "bg-background/20 text-white/70 hover:text-white opacity-80 hover:opacity-100",
