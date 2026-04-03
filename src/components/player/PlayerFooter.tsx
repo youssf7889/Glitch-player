@@ -49,10 +49,10 @@ export const PlayerFooter = React.memo(({
   setRepeat
 }: PlayerFooterProps) => {
   return (
-    <footer className="h-28 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[1fr_4fr_1fr] items-center">
-      {/* Track Info Section - Enlarged Album Art with stronger shadow */}
-      <div className="flex items-center gap-4 justify-start min-w-0 overflow-hidden pr-4">
-        <div className="w-20 h-20 bg-primary pixel-border flex-shrink-0 flex items-center justify-center overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)]">
+    <footer className="h-28 bg-accent text-white border-t-4 border-primary px-6 grid grid-cols-[auto_1fr_auto] items-center">
+      {/* Track Info Section - Enlarged Album Art with softer shadow */}
+      <div className="flex items-center gap-4 justify-start pr-4">
+        <div className="w-20 h-20 bg-primary pixel-border flex-shrink-0 flex items-center justify-center overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,0.25)]">
           {currentArtUrl ? (
             <img src={currentArtUrl} alt="" className="w-full h-full object-cover" />
           ) : (
@@ -61,15 +61,15 @@ export const PlayerFooter = React.memo(({
         </div>
       </div>
 
-      {/* Main Controls Section */}
-      <div className="flex flex-col items-center justify-center w-full px-4 gap-3">
+      {/* Main Controls Section - Centered Progress Bar */}
+      <div className="flex flex-col items-center justify-center w-full px-8 gap-3">
         <div className="flex items-center justify-center gap-4">
           <ControlIcon 
             icon={Shuffle} 
             size={14}
             active={shuffle} 
             onClick={() => setShuffle(!shuffle)} 
-            className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]"
+            className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]"
           />
           
           <div className="flex items-center gap-2">
@@ -77,12 +77,12 @@ export const PlayerFooter = React.memo(({
               icon={SkipBack} 
               size={18}
               onClick={onPrev} 
-              className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]"
+              className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]"
             />
             
             <button 
               onClick={onTogglePlay}
-              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border mx-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.25)] active:shadow-none transition-none"
+              className="w-12 h-12 bg-primary flex items-center justify-center pixel-border mx-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] active:shadow-none transition-none"
               title={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (
@@ -96,7 +96,7 @@ export const PlayerFooter = React.memo(({
               icon={SkipForward} 
               size={18}
               onClick={onNext} 
-              className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]"
+              className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]"
             />
           </div>
 
@@ -110,7 +110,7 @@ export const PlayerFooter = React.memo(({
                 const nextIdx = (modes.indexOf(repeat) + 1) % modes.length;
                 setRepeat(modes[nextIdx]);
               }} 
-              className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]"
+              className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]"
             />
             {repeat === 'one' && (
               <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-primary px-0.5 border border-white leading-none flex items-center justify-center h-3 w-3">1</span>
@@ -118,7 +118,7 @@ export const PlayerFooter = React.memo(({
           </div>
         </div>
         
-        <div className="w-full max-w-[2400px]">
+        <div className="w-full">
           <ProgressBar 
             current={currentTime} 
             total={duration} 
@@ -127,14 +127,14 @@ export const PlayerFooter = React.memo(({
         </div>
       </div>
 
-      {/* Volume Section */}
-      <div className="flex items-center justify-end gap-3 min-w-0 pl-4">
-        <div className="flex items-center gap-2 w-32">
+      {/* Volume Section - Lowered and shifted closer to right edge */}
+      <div className="flex items-center justify-end min-w-0 pr-0">
+        <div className="flex items-center gap-2 w-32 translate-y-[8px]">
           <ControlIcon 
             icon={isMuted ? VolumeX : Volume2} 
             size={18}
             onClick={onToggleMute} 
-            className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]"
+            className="shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]"
           />
           <div className="flex-1 h-4 relative flex items-center group">
             <div 
@@ -151,7 +151,7 @@ export const PlayerFooter = React.memo(({
               style={{ width: `${volume * 100}%` }}
             />
             <div 
-              className="absolute w-3 h-3 bg-primary z-20 pointer-events-none pixel-border-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]"
+              className="absolute w-3 h-3 bg-primary z-20 pointer-events-none pixel-border-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]"
               style={{ 
                 left: `${volume * 100}%`,
                 transform: 'translateX(-50%)'
