@@ -1,6 +1,8 @@
 
 "use client";
 
+import { useMemo } from 'react';
+
 interface ProgressBarProps {
   current: number;
   total: number;
@@ -10,13 +12,20 @@ interface ProgressBarProps {
 export function ProgressBar({ current, total, onSeek }: ProgressBarProps) {
   const percentage = total > 0 ? (current / total) * 100 : 0;
 
+  // Generate deterministic but random-looking waveform bars
+  const bars = useMemo(() => {
+    return Array.from({ length: 40 }).map((_, i) => ({
+      height: 20 + Math.sin(i * 0.5) * 15 + Math.abs(Math.cos(i * 0.8)) * 10 + 10,
+    }));
+  }, []);
+
   return (
     <div className="flex items-center gap-4 w-full group">
       <span className="text-3xl font-body w-20 text-right tabular-nums text-white/90">
         {formatTime(current)}
       </span>
       <div 
-        className="relative h-6 flex-1 bg-secondary/20 pixel-border-sm cursor-pointer overflow-hidden group-hover:bg-secondary/30 transition-colors"
+        className="relative h-10 flex-1 flex items-center gap-1 cursor-pointer overflow-hidden px-1"
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           const x = e.clientX - rect.left;
@@ -24,9 +33,25 @@ export function ProgressBar({ current, total, onSeek }: ProgressBarProps) {
           onSeek(clickedTime);
         }}
       >
+        {bars.map((bar, i) => {
+          const barPercentage = (i / (bars.length - 1)) * 100;
+          const isActive = barPercentage <= percentage;
+          return (
+            <div 
+              key={i}
+              className="flex-1 transition-all"
+              style={{ 
+                height: `${bar.height}%`, 
+                backgroundColor: isActive ? 'hsl(var(--primary))' : 'rgba(255,255,255,0.1)',
+                imageRendering: 'pixelated'
+              }}
+            />
+          );
+        })}
+        {/* Playhead */}
         <div 
-          className="absolute top-0 left-0 h-full bg-primary shadow-[2px_0_0_0_white]"
-          style={{ width: `${percentage}%` }}
+          className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)] z-10 transition-all duration-100"
+          style={{ left: `${percentage}%` }}
         />
       </div>
       <span className="text-3xl font-body w-20 tabular-nums text-white/90">

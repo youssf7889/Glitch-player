@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -338,7 +339,7 @@ export default function GlitchPlayer() {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        <aside className="w-64 border-r-4 border-accent bg-secondary/10 overflow-y-auto">
+        <aside className="w-56 border-r-4 border-accent bg-secondary/10 overflow-y-auto">
           <div className="p-4 space-y-6">
             <div className="flex items-center justify-between mb-2">
               <span className="font-headline text-sm text-muted-foreground uppercase tracking-widest">Library</span>
@@ -362,18 +363,23 @@ export default function GlitchPlayer() {
                   <button 
                     onClick={() => setActivePlaylistId(playlist.id)}
                     className={cn(
-                      "w-full flex items-center gap-4 px-5 py-5 text-left font-headline text-base transition-all pixel-border-sm min-w-0 pr-12",
+                      "w-full flex items-center gap-3 px-3 py-2 text-left font-headline text-sm transition-all pixel-border-sm min-w-0 pr-10",
                       activePlaylistId === playlist.id ? "bg-primary text-white" : "bg-background hover:bg-secondary/50"
                     )}
                   >
-                    <FolderOpen size={20} className="shrink-0" />
-                    <span className="truncate flex-1 uppercase">{playlist.name}</span>
+                    <FolderOpen size={16} className="shrink-0" />
+                    <span 
+                      className="truncate flex-1 uppercase whitespace-nowrap overflow-hidden"
+                      style={{ maskImage: 'linear-gradient(to right, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 80%, transparent 100%)' }}
+                    >
+                      {playlist.name}
+                    </span>
                   </button>
                   <button 
                     onClick={() => deletePlaylist(playlist.id)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-destructive hover:scale-110 transition-all p-1"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-destructive hover:scale-110 transition-all p-1"
                   >
-                    <Trash2 size={20} />
+                    <Trash2 size={16} />
                   </button>
                 </div>
               ))}
@@ -390,11 +396,11 @@ export default function GlitchPlayer() {
           {activePlaylistId ? (
             <>
               <div className="mb-4 flex items-end justify-between">
-                <div>
-                  <h2 className="font-headline text-2xl mb-1 uppercase truncate max-w-xl">
+                <div className="opacity-70">
+                  <h2 className="font-headline text-2xl mb-1 uppercase truncate max-w-xl tracking-widest">
                     {playlists.find(p => p.id === activePlaylistId)?.name}
                   </h2>
-                  <p className="text-xl font-body text-muted-foreground">
+                  <p className="text-xl font-body uppercase tracking-tighter">
                     {currentTracks.length} SONGS FOUND
                   </p>
                 </div>
@@ -403,9 +409,8 @@ export default function GlitchPlayer() {
               <div className="space-y-1.5">
                 <div className="grid grid-cols-12 gap-4 px-6 py-1 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase">
                   <div className="col-span-1">#</div>
-                  <div className="col-span-7">Title</div>
-                  <div className="col-span-3">Artist</div>
-                  <div className="col-span-1 text-right pr-4">Dur</div>
+                  <div className="col-span-8">Title</div>
+                  <div className="col-span-3 text-right pr-4">Artist</div>
                 </div>
 
                 {currentTracks.map((track, i) => (
@@ -429,7 +434,7 @@ export default function GlitchPlayer() {
                           </div>
                         )}
                       </div>
-                      <div className="col-span-7 flex items-center gap-3 min-w-0">
+                      <div className="col-span-8 flex items-center gap-3 min-w-0">
                         <div className={cn(
                           "font-headline text-lg font-bold truncate uppercase tracking-tight",
                           currentTrackId === track.id ? "text-primary" : ""
@@ -437,15 +442,15 @@ export default function GlitchPlayer() {
                           {track.name}
                         </div>
                       </div>
-                      <div className="col-span-3 font-body text-lg truncate opacity-70">
+                      <div className="col-span-3 font-body text-lg truncate opacity-70 text-right pr-4">
                         {track.artist}
-                      </div>
-                      <div className="col-span-1 font-body text-lg text-right pr-4">
-                        {formatTime(track.duration)}
                       </div>
                     </div>
                     {currentTrackId === track.id && (
-                      <div className="absolute -right-4 flex items-center text-primary">
+                      <div className={cn(
+                        "absolute -right-4 flex items-center text-primary filter drop-shadow-[2px_2px_0px_rgba(0,0,0,0.2)]",
+                        player.isPlaying && "animate-pulse"
+                      )}>
                         <div className="w-2 h-2 border-l-2 border-t-2 border-primary rotate-[135deg]" />
                         <div className="w-1.5 h-3 bg-primary -ml-[2px]" />
                       </div>
