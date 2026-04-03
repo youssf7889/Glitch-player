@@ -55,12 +55,12 @@
 
 .pixel-border {
   border: 4px solid hsl(var(--border));
-  box-shadow: 6px 6px 0px 0px hsl(var(--accent));
+  box-shadow: 8px 8px 0px 0px hsl(var(--accent));
 }
 
 .pixel-border-sm {
   border: 2px solid hsl(var(--border));
-  box-shadow: 4px 4px 0px 0px hsl(var(--accent));
+  box-shadow: 6px 6px 0px 0px hsl(var(--accent));
 }
 
 .pixel-button-active {

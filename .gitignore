@@ -1,25 +1,15 @@
-# Next.js
-.next/
-out/
-build/
-
-# Node
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# Environment
-.env*
+node_modules
+.next
+out
+build
+.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Firebase App Hosting
-.apphosting/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.vercel
+*.db
