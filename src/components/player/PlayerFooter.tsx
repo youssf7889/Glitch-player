@@ -124,10 +124,30 @@ export const PlayerFooter = React.memo(({
             size={18}
             onClick={onToggleMute} 
           />
-          <div className="flex-1 h-3 border-2 border-primary bg-accent/40 relative cursor-pointer group">
+          <div className="flex-1 h-4 relative flex items-center group">
+            {/* Dotted Background Track */}
             <div 
-              className="absolute top-0 left-0 h-full bg-primary"
+              className="absolute inset-x-0 h-0.5"
+              style={{
+                backgroundImage: `radial-gradient(circle, hsl(var(--primary)) 25%, transparent 25%)`,
+                backgroundSize: '6px 100%',
+                backgroundRepeat: 'repeat-x',
+                backgroundPosition: 'center'
+              }}
+            />
+            {/* Solid Progress Line */}
+            <div 
+              className="absolute left-0 h-1 bg-primary z-10"
               style={{ width: `${volume * 100}%` }}
+            />
+            {/* Square Thumb (Visual Overlay) */}
+            <div 
+              className="absolute w-3 h-3 bg-primary z-20 pointer-events-none pixel-border-sm"
+              style={{ 
+                left: `${volume * 100}%`,
+                transform: 'translateX(-50%)',
+                boxShadow: 'none'
+              }}
             />
             <input 
               type="range" 
@@ -136,7 +156,7 @@ export const PlayerFooter = React.memo(({
               step="0.01" 
               value={volume}
               onChange={(e) => onChangeVolume(parseFloat(e.target.value))}
-              className="absolute inset-0 opacity-0 cursor-pointer"
+              className="absolute inset-0 opacity-0 cursor-pointer z-30"
             />
           </div>
         </div>
