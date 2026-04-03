@@ -12,7 +12,7 @@ export function ProgressBar({ current, total, onSeek }: ProgressBarProps) {
 
   return (
     <div className="flex items-center gap-4 w-full group">
-      <span className="text-3xl font-body w-20 text-right tabular-nums text-white/90">
+      <span className="text-xl font-body w-16 text-right tabular-nums text-white/90">
         {formatTime(current)}
       </span>
       <div 
@@ -29,7 +29,7 @@ export function ProgressBar({ current, total, onSeek }: ProgressBarProps) {
           style={{ width: `${percentage}%` }}
         />
       </div>
-      <span className="text-3xl font-body w-20 tabular-nums text-white/90">
+      <span className="text-xl font-body w-16 tabular-nums text-white/90">
         {formatTime(total)}
       </span>
     </div>
