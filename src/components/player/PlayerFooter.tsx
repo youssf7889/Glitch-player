@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -145,8 +144,7 @@ export const PlayerFooter = React.memo(({
               className="absolute w-3 h-3 bg-primary z-20 pointer-events-none pixel-border-sm"
               style={{ 
                 left: `${volume * 100}%`,
-                transform: 'translateX(-50%)',
-                boxShadow: 'none'
+                transform: 'translateX(-50%)'
               }}
             />
             <input 

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -35,10 +34,10 @@ const TrackRow = React.memo(({
   onPlay: (t: TrackMetadata) => void
 }) => (
   <div className="relative flex items-center group">
-    {/* Active Track Indicator (The Thingy) */}
+    {/* Active Track Indicator (Moved to left) */}
     {isActive && (
       <div className={cn(
-        "absolute -left-2 z-10 flex items-center text-primary filter drop-shadow-[2px_2px_0px_rgba(0,0,0,0.2)]",
+        "absolute left-0 z-10 flex items-center text-primary filter drop-shadow-[3px_3px_0px_rgba(0,0,0,0.3)]",
         isPlaying && "animate-pulse"
       )}>
         <div className="w-1.5 h-3 bg-primary" />
@@ -49,9 +48,9 @@ const TrackRow = React.memo(({
     <div 
       onClick={() => onPlay(track)}
       className={cn(
-        "grid grid-cols-12 gap-4 px-6 py-1 pixel-border-sm cursor-pointer items-center transition-all w-full ml-4",
+        "grid grid-cols-12 gap-4 px-6 py-1 pixel-border-sm cursor-pointer items-center transition-all w-full ml-6",
         isActive 
-          ? "bg-primary/10 border-primary shadow-[4px_4px_0px_0px_hsl(var(--primary))] translate-x-1" 
+          ? "bg-primary/10 border-primary shadow-[6px_6px_0px_0px_hsl(var(--primary))] translate-x-1" 
           : "bg-card hover:bg-secondary/20"
       )}
     >
@@ -87,19 +86,19 @@ export const TrackList = React.memo(({
 }: TrackListProps) => {
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      {/* Fixed Header Section */}
+      {/* Fixed Header Section (Sticky behavior) */}
       <div className="bg-background flex-shrink-0 px-6 pt-6 pb-2 z-20">
         <div className="mb-4">
           <h2 className="font-headline text-2xl mb-1 uppercase truncate max-w-xl tracking-[0.2em] text-accent">
             {playlistName || 'CHOOSE A PLAYLIST'}
           </h2>
-          <p className="text-xl font-body uppercase tracking-[0.1em] opacity-70">
+          <p className="text-xl font-body uppercase tracking-[0.2em] opacity-70">
             {tracks.length} SONGS FOUND
           </p>
         </div>
 
         {/* Column Labels */}
-        <div className="grid grid-cols-12 gap-4 px-6 py-1 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase tracking-widest ml-4">
+        <div className="grid grid-cols-12 gap-4 px-6 py-1 text-lg font-headline text-muted-foreground border-b-2 border-muted uppercase tracking-widest ml-6">
           <div className="col-span-1">#</div>
           <div className="col-span-7">Title</div>
           <div className="col-span-3 text-right">Artist</div>
@@ -108,7 +107,7 @@ export const TrackList = React.memo(({
       </div>
 
       {/* Scrollable Cards Area */}
-      <div className="flex-1 overflow-y-auto px-6 space-y-1.5 pb-8 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto px-6 space-y-2 pb-8 custom-scrollbar">
         {tracks.map((track, i) => (
           <TrackRow 
             key={track.id} 
