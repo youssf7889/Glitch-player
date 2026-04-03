@@ -1,6 +1,6 @@
 "use client";
 
-import { FolderOpen, FolderPlus, Trash2 } from 'lucide-react';
+import { FolderOpen, FolderPlus } from 'lucide-react';
 import { Playlist } from '@/lib/db';
 import { cn } from '@/lib/utils';
 import React from 'react';
@@ -9,7 +9,6 @@ interface SidebarProps {
   playlists: Playlist[];
   activePlaylistId: string | null;
   setActivePlaylistId: (id: string | null) => void;
-  deletePlaylist: (id: string) => void;
   handleFolderUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -17,7 +16,6 @@ export const Sidebar = React.memo(({
   playlists, 
   activePlaylistId, 
   setActivePlaylistId, 
-  deletePlaylist,
   handleFolderUpload 
 }: SidebarProps) => {
   return (
@@ -45,7 +43,7 @@ export const Sidebar = React.memo(({
               <button 
                 onClick={() => setActivePlaylistId(playlist.id)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-3 py-1 text-left font-headline text-sm transition-all pixel-border-sm min-w-0 pr-10",
+                  "w-full flex items-center gap-3 px-3 py-1 text-left font-headline text-sm transition-all pixel-border-sm min-w-0 pr-3",
                   activePlaylistId === playlist.id ? "bg-primary text-white" : "bg-background hover:bg-secondary/50"
                 )}
               >
@@ -53,12 +51,6 @@ export const Sidebar = React.memo(({
                 <span className="truncate flex-1 uppercase whitespace-nowrap overflow-hidden">
                   {playlist.name}
                 </span>
-              </button>
-              <button 
-                onClick={() => deletePlaylist(playlist.id)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-destructive hover:scale-110 transition-all p-1"
-              >
-                <Trash2 size={16} />
               </button>
             </div>
           ))}

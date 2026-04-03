@@ -158,14 +158,6 @@ export default function GlitchPlayer() {
     e.target.value = '';
   };
 
-  const deletePlaylist = async (id: string) => {
-    if (confirm("Delete playlist?")) {
-      await db.deletePlaylist(id);
-      if (activePlaylistId === id) setActivePlaylistId(null);
-      loadData();
-    }
-  };
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement) return;
@@ -205,7 +197,6 @@ export default function GlitchPlayer() {
           playlists={playlists}
           activePlaylistId={activePlaylistId}
           setActivePlaylistId={setActivePlaylistId}
-          deletePlaylist={deletePlaylist}
           handleFolderUpload={handleFolderUpload}
         />
 
