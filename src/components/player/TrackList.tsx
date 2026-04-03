@@ -85,11 +85,11 @@ export const TrackList = React.memo(({
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-end justify-between">
-        <div className="opacity-70">
-          <h2 className="font-headline text-2xl mb-1 uppercase truncate max-w-xl tracking-[0.2em]">
+        <div>
+          <h2 className="font-headline text-2xl mb-1 uppercase truncate max-w-xl tracking-[0.2em] text-accent">
             {playlistName || 'CHOOSE A PLAYLIST'}
           </h2>
-          <p className="text-xl font-body uppercase tracking-[0.1em]">
+          <p className="text-xl font-body uppercase tracking-[0.1em] opacity-70">
             {tracks.length} SONGS FOUND
           </p>
         </div>
