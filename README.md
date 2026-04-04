@@ -8,6 +8,9 @@ It's a music player, it looks nice, I think. You can add a folder as a playlist.
 
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/4d42c8c2-79b0-4549-a23f-dfff1913e738" />
 
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ae282dda-e7b5-4dca-b28e-a2d182dfb724" />
+
 ## Pushing to GitHub
 
 To push this project to your repository at `https://github.com/youssf7889/Glitch-player-02`, run the following commands in your terminal:
